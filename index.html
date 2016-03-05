@@ -3,5 +3,22 @@
 <body>
 <h1>Hello World</h1>
 <p>I'm hosted with GitHub Pages.</p>
+<script>
+function sayHello(){
+    var promise=new Promise(function(resolve,reject){
+            var wait=Math.random()*1000;
+            setTimeout(function(){
+            },wait);
+            var value=Math.random();
+            if (value<0.5)
+                resolve(value);
+            else
+                reject(Error("Woop"))
+        });
+    return promise;
+}
+sayHello().then(function(x) {Console.log(x);},function(x){console.log(x)})
+
+</script>
 </body>
 </html>

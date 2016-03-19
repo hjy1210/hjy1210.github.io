@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.0.min.js"></script>
+<style>
+.div1 {
+    float: left;
+    width: 100px;
+    height: 50px;
+    margin: 10px;
+}
+
+.div2 {
+    border: 1px solid red;
+}
+</style>
+    </head>
+<body>
+ 
+<h1>台灣地區2015年7月原住民人口</h1>
+<p>參考<a href="http://blog.infographics.tw/2015/04/visualize-geographics-with-d3js/">資料視覺化</a>這篇文章，
+做成下面的互動頁面。其中<a href="http://www.apc.gov.tw/portal/docDetail.html?CID=65CCA9579A9BF68C&DID=0C3331F0EBD318C23C407A971B18EAF1">
+2015年7月原住民人口</a>
+資料取自<a href="http://www.apc.gov.tw/portal/docDetail.html?CID=65CCA9579A9BF68C&DID=0C3331F0EBD318C23C407A971B18EAF1">原住民委員會</a>，
+資料格式為xls，可利用R-package jsonlite轉換成json格式。台灣縣市地圖取自
+        <a href="http://data.gov.tw/node/7442">政府資料平台</a>，資料格式為shp，
+        可利用 Node.js 的 topojson 轉換成 json格式。</p>
+
+<div class="div1">滑鼠放到地圖上，就會顯示資料</br><span id='name'></span> </br><span id='natives'></span></div>
+<div class="div2">
+  <svg  width="800px" height="600px" viewBox="0 0 800 600"></svg>
+</div>
+  <script type="text/javascript" src="http://d3js.org/topojson.v1.min.js"></script>
+  <script>
+  var colors = "0f0 0ff f60 f0f 00f f00".split(' ');
+  var curpath;
+  getGraph=function(){
+    d3.json("County_MOI_1041215.json", function(topodata) {
+      features = topojson.feature(topodata, topodata.objects["County_MOI_1041215"]).features;
+      // 這裡要注意的是 topodata.objects["county"] 中的 "county" 為原本 shp 的檔名
+      var path = d3.geo.path().projection( // 路徑產生器
+        d3.geo.mercator().center([121,24]).scale(6000) // 座標變換函式
+      );
+      d3.select("svg").selectAll("path").data(features)
+        .enter().append("path").attr("d",path);
+      
+      for(idx=features.length - 1; idx >=0; idx -- ) {
+        features[idx].properties.density = Math.random()*255;  //density[features[idx].properties.C_Name];
+      }
+      var color = d3.scale.linear().domain([0,255]).range(["#000","#fff"]);
+      d3.select("svg").selectAll("path").data(features).attr({
+        //d: path,
+        //fill: function(d) {
+        //return color(d.properties.density);
+        //}
+        stroke:"black",
+        //strokeWidth:"3",
+        fill:'transparent'
+      }).on("mouseover", function(d) {
+        if (curpath) curpath.style.fill='transparent';
+        this.style.fill = "#"+colors[Math.floor(Math.random()*colors.length)];
+        curpath=this;
+        var name=d.properties.C_Name;
+        $("#name").text(d.properties.C_Name);
+        var ndx=locateName(name);
+        if (ndx>=0) {
+            var desc="";
+            for (fname in json[ndx]){
+                if (fname!="區域別" && fname!="性別"){
+                    desc=desc+fname+":"+json[ndx][fname]+"</br>";
+                }
+            }
+            //$("#natives").text(json[ndx]["阿美"]);
+            $("#natives").html(desc);
+        }
+        else {
+            $("#natives").text("");
+        }
+      });;
+    });
+  }
+  getData=function(){
+        d3.json("201507natives.json",function(data){
+            json=data;
+            //console.log(json);
+            getGraph();
+        })
+  }
+  locateName=function(name){
+      for (var i=0;i<json.length;i++){
+          if (name==json[i]["區域別"] && json[i]["性別"]=="計")
+            return i;
+      }
+      return -1;
+  }
+  getData();
+  </script>
+</body>
+</html>

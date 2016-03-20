@@ -2,6 +2,8 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
         <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
         <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.0.min.js"></script>
         <script src="fisheye.js"></script>
@@ -28,10 +30,11 @@
 資料格式為xls，可利用R-package jsonlite轉換成json格式。台灣縣市地圖取自
         <a href="http://data.gov.tw/node/7442">政府資料平台</a>，資料格式為shp，
         可利用 Node.js 的 topojson 轉換成 json格式。</p>
-
-<div class="div1">滑鼠放到地圖上，就會顯示資料</br><span id='name'></span> </br><span id='natives'></span></div>
-<div class="div2">
-  <svg  width="800px" height="600px" viewBox="0 0 800 600"></svg>
+<div class="w3-row">
+    <div class="w3-col" style="width:40%;text-align:right">滑鼠放到地圖上，就會顯示資料</br><span id='name'></span> </br><span id='natives'></span></div>
+    <div class="w3-col" style="width:60%;">
+        <svg  viewBox="100 -80 600 800"></svg>
+    </div>
 </div>
   <script type="text/javascript" src="http://d3js.org/topojson.v1.min.js"></script>
   <script>
@@ -98,7 +101,11 @@
       return [ret.x, ret.y];
       //return ret; // uncomment this line and comment above two lines to display map without fisheye effect
   }
-
+  // TODO:
+  // we can use $('svg').each(function () { $(this)[0].setAttribute('viewBox', '100 -80 600 700') }); to change viewBox
+  // we can use $(window).on("orientationchange",function(){...}); to handle orientationchange event
+  // window.innerWidth, window.innerHeight
+  // $(window).resize(function() {...});
   getData();
   </script>
 </body>

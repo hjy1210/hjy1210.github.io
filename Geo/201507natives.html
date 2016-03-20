@@ -4,10 +4,11 @@
         <meta charset="utf-8">
         <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
         <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.0.min.js"></script>
+        <script src="fisheye.js"></script>
 <style>
 .div1 {
     float: left;
-    width: 100px;
+    width: 120px;
     height: 50px;
     margin: 10px;
 }
@@ -36,57 +37,48 @@
   <script>
   var colors = "0f0 0ff f60 f0f 00f f00".split(' ');
   var curpath;
+  fisheye = d3.fisheye.circular().radius(100).distortion(2);
+
   getGraph=function(){
     d3.json("County_MOI_1041215.json", function(topodata) {
       features = topojson.feature(topodata, topodata.objects["County_MOI_1041215"]).features;
-      // 這裡要注意的是 topodata.objects["county"] 中的 "county" 為原本 shp 的檔名
-      var path = d3.geo.path().projection( // 路徑產生器
-        d3.geo.mercator().center([121,24]).scale(6000) // 座標變換函式
-      );
-      d3.select("svg").selectAll("path").data(features)
-        .enter().append("path").attr("d",path);
-      
-      for(idx=features.length - 1; idx >=0; idx -- ) {
-        features[idx].properties.density = Math.random()*255;  //density[features[idx].properties.C_Name];
-      }
-      var color = d3.scale.linear().domain([0,255]).range(["#000","#fff"]);
-      d3.select("svg").selectAll("path").data(features).attr({
-        //d: path,
-        //fill: function(d) {
-        //return color(d.properties.density);
-        //}
-        stroke:"black",
-        //strokeWidth:"3",
-        fill:'transparent'
-      }).on("mouseover", function(d) {
-        if (curpath) curpath.style.fill='transparent';
-        this.style.fill = "#"+colors[Math.floor(Math.random()*colors.length)];
-        curpath=this;
-        var name=d.properties.C_Name;
-        $("#name").text(d.properties.C_Name);
-        var ndx=locateName(name);
-        if (ndx>=0) {
+      // 這裡要注意的是 topodata.objects["County_MOI_1041215"] 中的 "County_MOI_1041215" 為原本 shp 的檔名
+      path = d3.geo.path().projection(prj); // path is a function
+      d3.select("svg").selectAll("path").data(features)  // 產生縣市邊界
+        .enter().append("path").attr({
+            d:path,
+            stroke:'black',
+            fill:'transparent'
+        }).on("mouseover", function(d) {                 // 設定 mouseover 顯示原住民人口資料
+          if (curpath) curpath.style.fill='transparent';
+          this.style.fill = "#"+colors[Math.floor(Math.random()*colors.length)];
+          curpath=this;
+          var name=d.properties.C_Name;   // 縣市名稱
+          $("#name").text(name);
+          var ndx=locateName(name);
+          if (ndx>=0) {
             var desc="";
             for (fname in json[ndx]){
                 if (fname!="區域別" && fname!="性別"){
                     desc=desc+fname+":"+json[ndx][fname]+"</br>";
                 }
             }
-            //$("#natives").text(json[ndx]["阿美"]);
             $("#natives").html(desc);
-        }
-        else {
+          }
+          else {
             $("#natives").text("");
-        }
-      });;
+          }
+        }).on("mousemove", function() {        //設定 mousemove 時，用魚眼更新邊界
+          fisheye.focus(d3.mouse(this));
+          update();
+        });
     });
   }
   getData=function(){
-        d3.json("201507natives.json",function(data){
+      d3.json("201507natives.json",function(data){
             json=data;
-            //console.log(json);
-            getGraph();
-        })
+            getGraph();             // 有了原住民人口資料後，才去抓取縣市邊界
+      });
   }
   locateName=function(name){
       for (var i=0;i<json.length;i++){
@@ -95,6 +87,18 @@
       }
       return -1;
   }
+  update=function(){
+       d3.select("svg").selectAll("path").data(features).attr({
+         d: path
+       });
+  }
+  prj = function(v) {
+      var ret = d3.geo.mercator().center([121,24]).scale(6000)(v);
+      ret = fisheye({x:ret[0],y:ret[1]});   // construct coordinate with fisfeye effect
+      return [ret.x, ret.y];
+      //return ret; // uncomment this line and comment above two lines to display map without fisheye effect
+  }
+
   getData();
   </script>
 </body>

@@ -79,7 +79,7 @@
     });
   }
   getData=function(){
-      d3.tsv("201507natives.txt",function(data){
+      d3.tsv("201507Natives.txt",function(data){
             json=data;
             getGraph();             // 有了原住民人口資料後，才去抓取縣市邊界
       });

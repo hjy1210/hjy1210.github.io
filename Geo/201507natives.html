@@ -25,16 +25,15 @@
 <h1>台灣地區104年7月原住民人口</h1>
 <div class="w3-container w3-green">
 <p>參考資料視覺化網站裡的<a href="http://blog.infographics.tw/2015/04/visualize-geographics-with-d3js/">D3.js 地理區塊視覺化</a>這篇文章，
-做成下面的互動頁面。其中104年7月原住民人口</a>
-資料取自<a href="http://www.apc.gov.tw/portal/docDetail.html?CID=65CCA9579A9BF68C&DID=0C3331F0EBD318C23C407A971B18EAF1">原住民委員會</a>，
-資料格式為xls，可先轉成 tsv 檔案，再利用 d3.tsv 讀取 tsv 檔案。台灣縣市地圖取自
-        <a href="http://data.gov.tw/node/7442">政府資料平台</a>，資料格式為shp，
-        可利用 Node.js 的 topojson 轉換成 json格式。</p>
+做成下面的互動頁面。為了讓地圖區塊集中方便顯示，將金門縣東移1.2經度，連江縣南移1緯度。
+104年7月原住民人口</a>資料取自<a href="http://www.apc.gov.tw/portal/docDetail.html?CID=65CCA9579A9BF68C&DID=0C3331F0EBD318C23C407A971B18EAF1">原住民委員會</a>，
+資料格式為xls，可先轉成 tsv 檔案，再利用 d3.tsv 讀取 tsv 檔案。
+台灣縣市地圖取自<a href="http://data.gov.tw/node/7442">政府資料平台</a>，資料格式為shp， 可利用 Node.js 的 topojson 轉換成 json 格式。</p>
 </div>
 <div class="w3-row">
     <div class="w3-col w3-teal" style="width:40%;text-align:right">滑鼠放到地圖上，就會顯示資料</br><span id='name'></span> </br><span id='natives'></span></div>
-    <div class="w3-col" style="width:60%;">
-        <svg  viewBox="80 -115 410 520"></svg>
+    <div class="w3-col w3-border" style="width:60%;">
+        <svg  viewBox="180 -50 310 460"></svg>
     </div>
 </div>
   <script type="text/javascript" src="http://d3js.org/topojson.v1.min.js"></script>
@@ -47,6 +46,32 @@
     d3.json("County_MOI_1041215.json", function(topodata) {
       features = topojson.feature(topodata, topodata.objects["County_MOI_1041215"]).features;
       // 這裡要注意的是 topodata.objects["County_MOI_1041215"] 中的 "County_MOI_1041215" 為原本 shp 的檔名
+      // 將金門縣東移1.2經度，連江縣南移1緯度。將金門與連江縣移動到比較靠近本島的地方，可以讓整個圖形加大。
+      for (var i=0;i<features.length;i++){
+          if (features[i].properties.C_Name=="金門縣" || features[i].properties.C_Name=="連江縣"){
+              var shift;
+              if (features[i].properties.C_Name=="金門縣")
+                shift=[1.2,0];
+              else
+                shift=[0,-1];
+              var coordinates=features[i].geometry.coordinates;
+              for (var i1=0;i1<coordinates.length;i1++){
+                  for (var i2=0;i2<coordinates[i1].length;i2++){
+                      for (var i3=0;i3<coordinates[i1][i2].length;i3++){
+                          coordinates[i1][i2][i3][0]+=shift[0];
+                          coordinates[i1][i2][i3][1]+=shift[1];
+                      }
+                  }
+              }
+          }
+      }
+      // 將金門縣用框框框起來，代表與本島的距離不正確
+      d3.select('svg').append('rect').attr('x','190').attr('y','90').attr('width','60')
+        .attr('height','50').attr('fill','none').attr('stroke','rgba(255,0,0,0.2)').attr('stroke-width','1');
+      // 將連江縣用框框框起來，代表與本島的距離不正確
+      d3.select('svg').append('rect').attr('x','250').attr('y','-10').attr('width','90')
+        .attr('height','50').attr('fill','none').attr('stroke','rgba(255,0,0,0.2)').attr('stroke-width','1');
+      
       path = d3.geo.path().projection(prj); // path is a function
       d3.select("svg").selectAll("path").data(features)  // 產生縣市邊界
         .enter().append("path").attr({
@@ -102,8 +127,7 @@
       return [ret.x, ret.y];
       //return ret; // uncomment this line and comment above two lines to display map without fisheye effect
   }
-  // TODO:
-  // 將金門與連江縣移動到比較靠近本島的地方，可以讓整個圖形加大。
+  // Future:
   // we can use $('svg').each(function () { $(this)[0].setAttribute('viewBox', '100 -80 600 700') }); to change viewBox.
   // we can use d3.select('svg').attr('viewBox','0 0 700 600'); to change viewBox.
   // we can use $(window).on("orientationchange",function(){...}); to handle orientationchange event.

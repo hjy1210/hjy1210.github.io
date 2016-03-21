@@ -22,18 +22,19 @@
     </head>
 <body>
  
-<h1>台灣地區2015年7月原住民人口</h1>
-<p>參考<a href="http://blog.infographics.tw/2015/04/visualize-geographics-with-d3js/">資料視覺化</a>這篇文章，
-做成下面的互動頁面。其中<a href="http://www.apc.gov.tw/portal/docDetail.html?CID=65CCA9579A9BF68C&DID=0C3331F0EBD318C23C407A971B18EAF1">
-2015年7月原住民人口</a>
+<h1>台灣地區104年7月原住民人口</h1>
+<div class="w3-container w3-green">
+<p>參考資料視覺化網站裡的<a href="http://blog.infographics.tw/2015/04/visualize-geographics-with-d3js/">D3.js 地理區塊視覺化</a>這篇文章，
+做成下面的互動頁面。其中104年7月原住民人口</a>
 資料取自<a href="http://www.apc.gov.tw/portal/docDetail.html?CID=65CCA9579A9BF68C&DID=0C3331F0EBD318C23C407A971B18EAF1">原住民委員會</a>，
-資料格式為xls，可利用R-package jsonlite轉換成json格式。台灣縣市地圖取自
+資料格式為xls，可先轉成 tsv 檔案，再利用 d3.tsv 讀取 tsv 檔案。台灣縣市地圖取自
         <a href="http://data.gov.tw/node/7442">政府資料平台</a>，資料格式為shp，
         可利用 Node.js 的 topojson 轉換成 json格式。</p>
+</div>
 <div class="w3-row">
-    <div class="w3-col" style="width:40%;text-align:right">滑鼠放到地圖上，就會顯示資料</br><span id='name'></span> </br><span id='natives'></span></div>
+    <div class="w3-col w3-teal" style="width:40%;text-align:right">滑鼠放到地圖上，就會顯示資料</br><span id='name'></span> </br><span id='natives'></span></div>
     <div class="w3-col" style="width:60%;">
-        <svg  viewBox="100 -80 600 800"></svg>
+        <svg  viewBox="80 -115 410 520"></svg>
     </div>
 </div>
   <script type="text/javascript" src="http://d3js.org/topojson.v1.min.js"></script>
@@ -78,7 +79,7 @@
     });
   }
   getData=function(){
-      d3.json("201507natives.json",function(data){
+      d3.tsv("201507natives.txt",function(data){
             json=data;
             getGraph();             // 有了原住民人口資料後，才去抓取縣市邊界
       });
@@ -96,16 +97,18 @@
        });
   }
   prj = function(v) {
-      var ret = d3.geo.mercator().center([121,24]).scale(6000)(v);
-      ret = fisheye({x:ret[0],y:ret[1]});   // construct coordinate with fisfeye effect
+      var ret = d3.geo.mercator().center([122,23.25]).scale(6000)(v);
+      ret = fisheye({x:ret[0],y:ret[1]});   // construct coordinate with fisheye effect
       return [ret.x, ret.y];
       //return ret; // uncomment this line and comment above two lines to display map without fisheye effect
   }
   // TODO:
-  // we can use $('svg').each(function () { $(this)[0].setAttribute('viewBox', '100 -80 600 700') }); to change viewBox
-  // we can use $(window).on("orientationchange",function(){...}); to handle orientationchange event
-  // window.innerWidth, window.innerHeight
-  // $(window).resize(function() {...});
+  // 將金門與連江縣移動到比較靠近本島的地方，可以讓整個圖形加大。
+  // we can use $('svg').each(function () { $(this)[0].setAttribute('viewBox', '100 -80 600 700') }); to change viewBox.
+  // we can use d3.select('svg').attr('viewBox','0 0 700 600'); to change viewBox.
+  // we can use $(window).on("orientationchange",function(){...}); to handle orientationchange event.
+  // $(window).resize(function() {...});  // window.innerWidth, window.innerHeight
+  // We use d3.tsv("201507natives.txt",function(err,d){obj=d;}); to save conversion process tsv > json.
   getData();
   </script>
 </body>

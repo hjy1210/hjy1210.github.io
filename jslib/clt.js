@@ -1,3 +1,23 @@
+    function showlect() {
+        //alert($(this).attr('class'));
+        var index = $(this).parent().children().index(this);
+        var x = $(".lect");
+        var y = $(".lectbutton");
+        for (i = 0; i < x.length; i++) {
+            if (i == index) {
+                //x[i].style.display = "block";
+                $(x[i]).css('display', 'block');
+                $(y[i]).removeClass('w3-white').addClass('w3-black');
+            } else {
+                $(x[i]).css('display', 'none');
+                $(y[i]).removeClass('w3-black').addClass('w3-white');
+            }
+        }
+    }
+
+    $('.lectbutton').on('click', showlect);
+
+ 
     var values, x, index;
     var arr, n, replication, size, mu, sigma, samplemu, samplesigma, left, right;
     var xScale, sScale, xinverse, pScale, population, data, width, mar, height, maxy;

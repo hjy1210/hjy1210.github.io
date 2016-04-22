@@ -7,17 +7,15 @@
             if (i == index) {
                 //x[i].style.display = "block";
                 $(x[i]).css('display', 'block');
-                $(y[i]).removeClass('w3-white').addClass('w3-black');
+                $(y[i]).addClass('btn-info');
             } else {
                 $(x[i]).css('display', 'none');
-                $(y[i]).removeClass('w3-black').addClass('w3-white');
+                $(y[i]).removeClass('btn-info');
             }
         }
     }
-
     $('.lectbutton').on('click', showlect);
 
- 
     var values, x, index;
     var arr, n, replication, size, mu, sigma, samplemu, samplesigma, left, right;
     var xScale, sScale, xinverse, pScale, population, data, width, mar, height, maxy;

@@ -326,26 +326,30 @@
         }
 
         function part() {
-            switch (index) {
+           $('#progress1').css('display','block');
+           switch (index) {
                 case 1:
                     part1_1();
-                    progressbar.progressbar('value', 20);
+                    $('#myprogress').css('width','20%').text('20%');
                     break;
                 case 2:
                     part1_2();
-                    progressbar.progressbar('value', 40);
+                    $('#myprogress').css('width','40%').text('40%');
                     break;
                 case 3:
                     part2();
-                    progressbar.progressbar('value', 50);
+                    $('#myprogress').css('width','50%').text('50%');
                     break;
                 case 4:
                     part3();
-                    progressbar.progressbar('value', 80);
+                    $('#myprogress').css('width','80%').text('80%');
                     break;
                 case 5:
                     part4();
-                    progressbar.progressbar('value', 100);
+                    $('#myprogress').css('width','100%').text('100%');
+                    $('#myprogress').css('width','0%').text('0%');
+                    $('#progress1').css('display','none');
+                    setTimeout(part, 1000);
                     break;
                 default:
                     return;
@@ -374,9 +378,6 @@
             })
         }
     }
-    var progressbar = $('#progressbar'),
-        progressLabel = $('#progressLabel');
-    progressbar.css('width', '100');
 
     function buttonfun() {
         n = parseInt(d3.select('#noOfPartition').node().value);
@@ -394,16 +395,5 @@
             alert('n必須為1到10000間的整數');
             return;
         }
-        progressbar.progressbar({
-            value: 0,
-            change: function() {
-                progressLabel.text(progressbar.progressbar("value") + "%");
-            },
-            complete: function() {
-                progressLabel.text("模擬");
-                progressbar.progressbar('destroy');
-            }
-        });
-        progressbar.progressbar('value', 5);
         histo();
     }

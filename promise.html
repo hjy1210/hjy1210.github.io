@@ -6,6 +6,8 @@
 <body>
 <h1>Hello World</h1>
 <p id="test">I'm hosted with GitHub Pages.</p>
+<p> Following message is a little random.</p>
+<p id="message"></p>
 <script>
 function sayHello(){
     var promise=new Promise(function(resolve,reject){
@@ -20,7 +22,8 @@ function sayHello(){
         });
     return promise;
 }
-sayHello().then(function(x) {console.log(x);},function(x){console.log(x)})
+let element= document.getElementById('message')
+sayHello().then(function(x) {element.innerHTML=x;},function(x){element.innerHTML=x.message})
 console.log("start")
 </script>
 </body>

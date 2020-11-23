@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!--<link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css" >-->
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <script src="https://d3js.org/d3.v6.min.js"></script>
+        <script src="https://d3js.org/d3-array.v2.min.js"></script>
+        <script src="https://d3js.org/d3-geo.v2.min.js"></script>
+        <script src="https://unpkg.com/topojson@3"></script>        
+<style>
+.div1 {
+    float: left;
+    width: 120px;
+    height: 50px;
+    margin: 10px;
+}
+
+.div2 {
+    border: 1px solid red;
+}
+</style>
+    </head>
+<body>
+ 
+<h1>台灣地區104年7月原住民人口</h1>
+<div class="w3-container w3-green">
+<p>參考資料視覺化網站裡的<a href="http://blog.infographics.tw/2015/04/visualize-geographics-with-d3js/">D3.js 地理區塊視覺化</a>這篇文章，
+做成下面的互動頁面。為了讓地圖區塊集中方便顯示，將金門縣東移1.2經度，連江縣南移1緯度。
+104年7月原住民人口</a>資料取自<a href="https://data.gov.tw/datasets/search?qs=tid:503+tid:503%20dtid:428%20&order=pubdate">政府資料開放平台原住民委員會</a>，
+資料格式為xls，可先轉成 tsv 檔案，再利用 d3.tsv 讀取 tsv 檔案。
+台灣縣市地圖取自<a href="https://data.gov.tw/node/7442">政府資料平台</a>，資料格式為shp， 可利用 Node.js 的 topojson 轉換成 json 格式。</p>
+</div>
+<div class="w3-row">
+    <div class="w3-col w3-teal" style="width:40%;text-align:right">滑鼠放到地圖上，就會顯示資料</br><span id='name'></span> </br><span id='natives'></span></div>
+    <div class="w3-col w3-border" style="width:60%;">
+        <svg  viewBox="0 0 310 460"></svg>
+    </div>
+</div>
+  <script>
+  var colors = "0f0 0ff f60 f0f 00f f00".split(' ');
+  var curpath;
+  let taiwan, taiwanGeo, features, taiwanProjection, taiwanPathGenerator, json
+  let margin = 10
+  let width = 310
+  let height = 460
+
+  getGraph=async function(){
+    taiwan = await d3.json("County_MOI_1041215.json")
+    taiwanGeo = topojson.feature(taiwan, taiwan.objects.County_MOI_1041215)
+    features = taiwanGeo.features;
+    // 這裡要注意的是 topodata.objects["County_MOI_1041215"] 中的 "County_MOI_1041215" 為原本 shp 的檔名
+    // 將金門縣東移1.2經度，連江縣南移1緯度。將金門與連江縣移動到比較靠近本島的地方，可以讓整個圖形加大。
+    for (var i=0;i<features.length;i++){
+        if (features[i].properties.C_Name=="金門縣" || features[i].properties.C_Name=="連江縣"){
+            var shift;
+            if (features[i].properties.C_Name=="金門縣")
+              shift=[1.2,0];
+            else
+              shift=[0,-1];
+            var coordinates=features[i].geometry.coordinates;
+            for (var i1=0;i1<coordinates.length;i1++){
+                for (var i2=0;i2<coordinates[i1].length;i2++){
+                    for (var i3=0;i3<coordinates[i1][i2].length;i3++){
+                        coordinates[i1][i2][i3][0]+=shift[0];
+                        coordinates[i1][i2][i3][1]+=shift[1];
+                    }
+                }
+            }
+        }
+    }
+    // 將連江縣用框框框起來，代表與本島的距離不正確
+    d3.select('svg').append('rect').attr('x','70').attr('y','10').attr('width','70')
+      .attr('height','40').attr('fill','none').attr('stroke','rgba(255,0,0,0.2)').attr('stroke-width','1');
+    // 將金門縣用框框框起來，代表與本島的距離不正確
+    d3.select('svg').append('rect').attr('x','5').attr('y','115').attr('width','40')
+      .attr('height','30').attr('fill','none').attr('stroke','rgba(255,0,0,0.2)').attr('stroke-width','1');
+
+    taiwanProjection = d3.geoMercator()
+        .fitExtent([[margin, margin], [width - margin, height - margin]], taiwanGeo)
+    taiwanPathGenerator = d3.geoPath().projection(taiwanProjection)
+
+    let svg = d3.select("svg")
+    svg.selectAll('path')
+        // data() expects an Array, so make sure to pass the features entry of our FeatureCollection
+        .data(taiwanGeo.features)
+        // select all data items that are not represented on the map yet, and add them
+        .enter()
+        .append('path')
+        // assign attributes to those new elements
+        .attr('d', taiwanPathGenerator)
+        .attr('fill', 'transparent')  // fill 不能是none，才能對click做反應
+        .attr('stroke', '#0000ff')
+        .attr('stroke-width', '0.5')
+        .on('mouseenter',function (e,d){
+            //this.style.fill='#ccc';
+            //console.log(d.properties.C_Name, d.properties.County_ID)
+            
+            if (curpath) curpath.style.fill='transparent';
+            this.style.fill = "#"+colors[Math.floor(Math.random()*colors.length)];
+            curpath=this;
+            var name=d.properties.C_Name;   // 縣市名稱
+            d3.select("#name").text(name);
+            var ndx=locateName(name);
+            if (ndx>=0) {
+              var desc="";
+              for (fname in json[ndx]){
+                if (fname!="區域別" && fname!="性別"){
+                    desc=desc+fname+":"+json[ndx][fname]+"</br>";
+                }
+              }
+              d3.select("#natives").html(desc);
+            }
+            else {
+              d3.select("#natives").text("");
+            }
+
+        })
+  }
+  getData=async function(){
+      let data = await d3.tsv("201507Natives.txt")
+      json=data;
+      getGraph();             // 有了原住民人口資料後，才去抓取縣市邊界
+  }
+  locateName=function(name){
+      for (var i=0;i<json.length;i++){
+          if (name==json[i]["區域別"] && json[i]["性別"]=="計")
+            return i;
+      }
+      return -1;
+  }
+  update=function(){
+       d3.select("svg").selectAll("path").data(features).attr({
+         d: path
+       });
+  }
+  // Future:
+  // we can use $('svg').each(function () { $(this)[0].setAttribute('viewBox', '100 -80 600 700') }); to change viewBox.
+  // we can use d3.select('svg').attr('viewBox','0 0 700 600'); to change viewBox.
+  // we can use $(window).on("orientationchange",function(){...}); to handle orientationchange event.
+  // $(window).resize(function() {...});  // window.innerWidth, window.innerHeight
+  // We use d3.tsv("201507natives.txt",function(err,d){obj=d;}); to save conversion process tsv > json.
+  getData();
+  </script>
+</body>
+</html>

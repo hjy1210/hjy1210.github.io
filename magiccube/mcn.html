@@ -1,0 +1,89 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Three.js - Primitives</title>
+    <style>
+        body {
+            font-size: 20pt;
+            margin: 0;
+        }
+
+        button {
+            margin: 5;
+            font-size: 20pt;
+        }
+
+        #c {
+            float: left;
+            width: 50vw;
+            height: 90vh;
+            cursor: crosshair;
+        }
+
+        #c:focus {
+            outline: none;
+        }
+    </style>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <p>請先在 threejsfundamentals 的根目錄執行 servez 或 http-server 啟動網頁伺服器，再用瀏覽器瀏覽到 localhost:8080/exercises/mcn.html。</p>
+    <p>撰寫網頁時，必須嚴格遵守Tag正確配對的規矩。</p>
+    <canvas id="c" tabindex="0"></canvas><!-- tabindex="0" 讓canvas可以接受鍵盤的輸入-->
+    <h2>選定階數</h2>
+    <label for="size">選定階數:</label>
+    <select id="size" name="size" size="3" width="40" style="font-size: 40pt;">
+        <option value="2"> 2 </option>
+        <option value="3" selected> 3 </option>
+        <option value="4"> 4 </option>
+        <option value="5"> 5 </option>
+    </select>
+    <button id="play">開始玩</button>
+    <h2>操作方法</h2>
+    <p>有兩種模式，當滑鼠為單十字時可轉動單層方塊，當滑鼠為附箭頭十字時可轉動整個塊魔術方塊。
+        當畫布聚焦時，用 s 鍵在兩種模式間進行切換。</p>
+    <p>要轉動單層方塊，在該層的起始面(法向量與轉動向量垂直)按下滑鼠，拖曳至同層終點面(法向量與轉動向量垂直)後鬆開滑鼠。</p>
+    <p>當畫布聚焦時，按 u 鍵復原一轉，按 r 鍵重作一轉。淨走 <span id="dos"></span> 步，退回 <span id="undos"></span> 步。</p>
+    <h2>魔術方塊轉動符號</h2>
+    <p>F、B、R、L、U、B 代表前、後、右、左、上、下層順時針轉90度，f、b、r、l、u、b 代表前、後、右、左、上、下層逆時針轉90度。</p>
+    <p>\(F_k、B_k、R_k、L_k、U_k、B_k\) 代表前、後、右、左、上、下起第k層順時針轉90度，\(f_k、b_k、r_k、l_k、u_k、b_k\) 代表前、後、右、左、上、下起第k層逆時針轉90度。</p>
+    <p>所謂的順逆時針，都是面對該面時的角度。</p>
+    <h2>在三階方塊中，將上層的左前、左後、右後角塊輪調</h2>
+    <p>\(FrfLFRfl\)</p>
+    <h2>在三階方塊中，將上層的前、後、右邊塊輪調。</h2>
+    <p>\(Frfr_2FRfR_2\)</p>
+    <h2>在三階方塊中，將上、前、右的中塊輪調，同時將下、後、左的中塊輪調。</h2>
+    <p>\(f_2R_2F_2r_2\)</p>
+    <h2>在三階方塊中，將上層的前面兩角方對調。</h2>
+    <a href="https://www.youtube.com/watch?v=QyLzSnA8odc">Swap Adjacent Corners</a>
+    <p>\((rDDRUU)(rDDRu)(rDDRu)(rDDRu) \)</p>
+    <h2>在三階方塊中，將上層的前面兩角方各自旋轉。</h2>
+    <p>\((fDFLDl)(U)(LdlfdF)(u)\)</p>
+    <h2>在三階方塊中，將上層的左前兩邊方翻轉。</h2>
+    <p>\((Lu_2L^2U^2_2L)(U)(lu^2_2l^2U_2l)(u)\)</p>
+
+    <p>下面參考<a href="https://math.berkeley.edu/~hutching/rubik.pdf">hutching的講義</a>，關於commutator很有意思，前面三個方法都屬於commutator。
+    </p>
+    <h2>To rotate the top front left and top front right corners:</h2>
+    <p>\(X=F^{−1}DFLDL^{−1}\)
+        rotates the top front left corner clockwise without disturbing the rest of the top layer.
+        The lower two layers of the cube are messed up.
+    </p>
+    <p>\(Y=U\) moves the top front right corner into the top front left position, and does not affect the lower two
+        layers
+        of the cube.</p>
+    <p> \(X^{−1}=LD^{−1}L^{−1}F^{−1}D^{−1}F\) rotates the top front left corner(formerly the top front right corner)
+        counterclockwise and repairsthe damage to the lower two layers.</p>
+    <p>\(Y^{−1}=U^{−1}\) restores the top layer to its original position.</p>
+    <p>So the commutator \(XYX^{−1}Y^{−1}=
+        (F^{−1}DFLDL^{−1})U(LD^{−1}L^{−1}F^{−1}D^{−1}F)U^{−1}\)
+        rotates the top front left corner clockwise and the top front right corner counterclockwise without disturbing
+        the
+        rest of the cube.</p>
+
+    <script type="module" src="./mcn.js"></script> 
+
+</body>

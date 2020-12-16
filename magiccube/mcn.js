@@ -73,10 +73,6 @@ async function onMouseClick(event) {
 	if (enabled || turning) return; // 控制camara角度時，不應該可以轉動玩具
 	//mouse.x = event.clientX / window.innerWidth * 2 - 1;      ///// 這樣的話，canvas必須寬度占滿整個視窗才行
 	//mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-	if (event.changedTouches && event.changedTouches.length>1){
-		switchEnabled()
-		return
-	}
 	let pos = getCanvasRelativePosition(event);
 	mouse.x = pos.x / canvas.width * 2 - 1;
 	mouse.y = pos.y / canvas.height * -2 + 1; // note we flip Y
@@ -199,6 +195,13 @@ function resizeRendererToDisplaySize(renderer) {
 
 initCamera();
 
+const undoelement = document.getElementById("undo")
+const redoelement = document.getElementById("redo")
+const toggleenabledelement = document.getElementById("toggleenabled")
+undoelement.addEventListener("click", undo, false)
+redoelement.addEventListener("click", redo, false)
+toggleenabledelement.addEventListener("click", switchEnabled, false)
+
 function main() {
 	initData();
 	saveDoUndo();
@@ -215,6 +218,7 @@ function switchEnabled() {
 	enabled = !enabled;
 	controls.enabled = enabled;
 	canvas.style.cursor = enabled ? 'all-scroll' : 'crosshair';
+	toggleenabledelement.innerText = enabled ? "current mode : rotate":"current mode : play"
 }
 // https://threejsfundamentals.org/threejs/lessons/threejs-tips.html#tabindex 介紹如何讓canvas可以接受鍵盤的輸入。
 canvas.addEventListener('keydown', async (e) => {
@@ -223,24 +227,10 @@ canvas.addEventListener('keydown', async (e) => {
 			switchEnabled();
 			break;
 		case 82: //r : redo
-			if (undos.length > 0 && !turning) {
-				let onestep = undos.pop();
-				turning = true;
-				await rotateMagicCube(render, magicCube, onestep[0], onestep[1], onestep[2]);
-				turning = false;
-				dos.push(onestep);
-				saveDoUndo();
-			}
+			await redo();
 			break;
 		case 85: // u undo
-			if (dos.length > 0 && !turning) {
-				let onestep = dos.pop();
-				turning = true;
-				await rotateMagicCube(render, magicCube, onestep[0], onestep[1], !onestep[2]);
-				turning = false;
-				undos.push(onestep);
-				saveDoUndo();
-			}
+			await undo();
 			break;
 	}
 });
@@ -251,3 +241,25 @@ playButton.addEventListener('click', () => {
 	playButton.disabled = true;
 	main();
 });
+async function undo() {
+	if (dos.length > 0 && !turning) {
+		let onestep = dos.pop();
+		turning = true;
+		await rotateMagicCube(render, magicCube, onestep[0], onestep[1], !onestep[2]);
+		turning = false;
+		undos.push(onestep);
+		saveDoUndo();
+	}
+}
+
+async function redo() {
+	if (undos.length > 0 && !turning) {
+		let onestep = undos.pop();
+		turning = true;
+		await rotateMagicCube(render, magicCube, onestep[0], onestep[1], onestep[2]);
+		turning = false;
+		dos.push(onestep);
+		saveDoUndo();
+	}
+}
+

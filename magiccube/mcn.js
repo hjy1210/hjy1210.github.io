@@ -48,6 +48,7 @@ function initData() {
 function getCanvasRelativePosition(event) {
 	const rect = canvas.getBoundingClientRect();
 	if (event.changedTouches && event.changedTouches.length>0) {
+		event.preventDefault()
 		let clientX = event.changedTouches[0].pageX
 		let clientY = event.changedTouches[0].pageY
 		let span = document.querySelector('#message');

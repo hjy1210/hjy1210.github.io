@@ -62,6 +62,7 @@ function getCanvasRelativePosition(event) {
 }
 
 async function onMouseClick(event) {
+	event.preventDefault()
 	// calculate mouse position in normalized device coordinates
 	// (-1 to +1) for both components
 	if (enabled || turning) return; // 控制camara角度時，不應該可以轉動玩具

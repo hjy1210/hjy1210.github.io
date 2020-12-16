@@ -73,6 +73,10 @@ async function onMouseClick(event) {
 	if (enabled || turning) return; // 控制camara角度時，不應該可以轉動玩具
 	//mouse.x = event.clientX / window.innerWidth * 2 - 1;      ///// 這樣的話，canvas必須寬度占滿整個視窗才行
 	//mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+	if (event.changedTouches && event.changedTouches.length>1){
+		switchEnabled()
+		return
+	}
 	let pos = getCanvasRelativePosition(event);
 	mouse.x = pos.x / canvas.width * 2 - 1;
 	mouse.y = pos.y / canvas.height * -2 + 1; // note we flip Y

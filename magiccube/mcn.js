@@ -47,6 +47,14 @@ function initData() {
 ///// https://threejsfundamentals.org/threejs/lessons/threejs-picking.html
 function getCanvasRelativePosition(event) {
 	const rect = canvas.getBoundingClientRect();
+	if (event.changedTouches && event.changedTouches.length>0) {
+		let clientX = event.changedTouches[0].pageX
+		let clientY = event.changedTouches[0].pageY
+		return {
+			x: (clientX - rect.left) * canvas.width / rect.width,
+			y: (clientY - rect.top) * canvas.height / rect.height
+		}
+	}
 	return {
 		x: (event.clientX - rect.left) * canvas.width / rect.width,
 		y: (event.clientY - rect.top) * canvas.height / rect.height
@@ -137,6 +145,8 @@ function initCamera() {
 	canvas = document.querySelector('#c');
 	canvas.addEventListener('mousedown', onMouseClick, false);
 	canvas.addEventListener('mouseup', onMouseClick, false);
+	canvas.addEventListener("touchstart", onMouseClick, false);
+	canvas.addEventListener("touchend", onMouseClick, false);
 
 	renderer = new THREE.WebGLRenderer({ canvas });
 

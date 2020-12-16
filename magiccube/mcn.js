@@ -51,15 +51,15 @@ function getCanvasRelativePosition(event) {
 		event.preventDefault()
 		let clientX = event.changedTouches[0].pageX
 		let clientY = event.changedTouches[0].pageY
-		let span = document.querySelector('#message');
-		span.innerHTML = "clientX="+clientX+", clientY="+clientY
+		//let span = document.querySelector('#message');
+		//span.innerHTML = "clientX="+clientX+", clientY="+clientY
 		return {
 			x: (clientX - rect.left) * canvas.width / rect.width,
 			y: (clientY - rect.top) * canvas.height / rect.height
 		}
 	}
-	let span = document.querySelector('#message');
-	span.innerHTML = "clientX="+event.clientX+", clientY="+event.clientY
+	//let span = document.querySelector('#message');
+	//span.innerHTML = "clientX="+event.clientX+", clientY="+event.clientY
 	return {
 		x: (event.clientX - rect.left) * canvas.width / rect.width,
 		y: (event.clientY - rect.top) * canvas.height / rect.height

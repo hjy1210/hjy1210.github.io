@@ -6,13 +6,11 @@
     <title>Three.js - Primitives</title>
     <style>
         body {
-            font-size: 16pt;
-            margin: 0;
+           margin: 0;
         }
 
         button {
             margin: 5;
-            font-size: 16pt;
         }
 
         #c {
@@ -48,7 +46,7 @@
     <p>有兩種模式，當滑鼠為單十字(play mode)時可轉動單層方塊，當滑鼠為附箭頭十字(rotate mode)時可轉動整個塊魔術方塊。
         當畫布聚焦時，用 s 鍵(current mode 按鈕)在兩種模式間進行切換。</p>
     <p>要轉動單層方塊，在該層的起始面(法向量與轉動向量垂直)按下滑鼠，拖曳至同層終點面(法向量與轉動向量垂直)後鬆開滑鼠。</p>
-    <p>當畫布聚焦時，按 u 鍵(undo 按鈕)復原一轉，按 r 鍵(redo 按鈕)重作一轉。淨走 <span id="dos"></span> 步，退回 <span id="undos"></span> 步。</p>
+    <p>當畫布聚焦時，按 u 鍵(undo 按鈕)復原一轉，按 r 鍵(redo 按鈕)重作一轉。</p>
     <h2>魔術方塊轉動符號</h2>
     <p>F、B、R、L、U、B 代表前、後、右、左、上、下層順時針轉90度，f、b、r、l、u、b 代表前、後、右、左、上、下層逆時針轉90度。</p>
     <p>\(F_k、B_k、R_k、L_k、U_k、B_k\) 代表前、後、右、左、上、下起第k層順時針轉90度，\(f_k、b_k、r_k、l_k、u_k、b_k\) 代表前、後、右、左、上、下起第k層逆時針轉90度。</p>

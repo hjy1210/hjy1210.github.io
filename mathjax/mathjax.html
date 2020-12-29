@@ -15,9 +15,12 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <!--<script async src="tex-mml-chtml-config.js" ></script>-->
     <style>
-        table, th, td {
+        table,
+        th,
+        td {
             border: 1px solid black;
         }
+
         table {
             width: 100%
         }
@@ -29,19 +32,19 @@
     <p>MathJax 由許多元件所組成，例如 input/tex, input/mathml, output/svg, output/chtml。
         這些元件可適當組合以因應需要。</p>
     <p>MathJax 也提供現成的常用組合，讓使用者省卻組合的麻煩，但必要時又可修改增添。例如，
-    tex-mml-chtml 組件，包含 input/tex、input/mathml 與 output/chtml 等元件。
-    用 tex-mml-chtml 組件，我們可以用 tex 或 mathml 語法做輸入，而得到 commomHTML 
-    可供 html 網頁使用的輸出。input/tex 預設的語法是 latex 語法，
-    inline/display 數學分別用 \\(,\\)，\\[,\\] 來標記。
+        tex-mml-chtml 組件，包含 input/tex、input/mathml 與 output/chtml 等元件。
+        用 tex-mml-chtml 組件，我們可以用 tex 或 mathml 語法做輸入，而得到 commomHTML
+        可供 html 網頁使用的輸出。input/tex 預設的語法是 latex 語法，
+        inline/display 數學分別用 \\(,\\)，\\[,\\] 來標記。
     </p>
 
     <h2>tex-mml-chtml 組件</h2>
-    <p>使用 tex-mml-chtml 組件，只需要在 head 區塊增加 </p>             
+    <p>使用 tex-mml-chtml 組件，只需要在 head 區塊增加 </p>
     <pre>
                 &lt;script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    </pre>    
+    </pre>
     <p>就可以用 LaTeX/TeX 語法或 MathML 語法輸入數學公式，抱括 <a href="https://mhchem.github.io/MathJax-mhchem/">化學式與物理單位</a>，
-    下表是一些例子。</p>
+        下表是一些例子。</p>
     <table>
         <tr>
             <th>輸入</th>
@@ -65,29 +68,32 @@
         </tr>
         <tr>
             <td>
-                \\( \\ce{N2O4(g)  <=> 2NO2(g)}\\)
+                \\( \\ce{N2O4(g) <=> 2NO2(g)}\\)
             </td>
-            <td>\( \ce{N2O4(g)    <=> 2NO2(g)}\)
+            <td>\( \ce{N2O4(g) <=> 2NO2(g)}\)
             </td>
         </tr>
         <tr>
             <td>
-                \\[ \ce{CH4(g) + H2O(g) <=>[\\scriptstyle Ni,700K] CO(g) + 3H2(g)} \\hspace{0.5cm}\\Delta H <0 \\]
-            </td>
+                \\[ \ce{CH4(g) + H2O(g) <=>[\\scriptstyle Ni,700K] CO(g) + 3H2(g)} \\hspace{0.5cm}\\Delta H <0 \\] </td>
             <td>
-                \[ \ce{CH4(g) + H2O(g) <=>[\scriptstyle Ni,700K] CO(g) + 3H2(g)} \hspace{0.5cm}\Delta H <0 \]
-            </td>
+                \[ \ce{CH4(g) + H2O(g) <=>[\scriptstyle Ni,700K] CO(g) + 3H2(g)} \hspace{0.5cm}\Delta H <0 \] </td>
         </tr>
         <tr>
             <td>
                 &lt;math>&lt;msup>&lt;mi>x&lt;/mi>&lt;mn>2&lt;/mn>&lt;/msup>&lt;/math>
             </td>
             <td>
-                <math><msup><mi>x</mi><mn>2</mn></msup></math>
+                <math>
+                    <msup>
+                        <mi>x</mi>
+                        <mn>2</mn>
+                    </msup>
+                </math>
             </td>
         </tr>
     </table>
-    <p>方程式 \(ax^2+bx+c=0\) 的解為
+    <!--<p>方程式 \(ax^2+bx+c=0\) 的解為
         \[x=\frac{-b\pm\sqrt{b^2-4ac}}{2a} \tag{1.3}\]
     </p>
     <p>方程式 \(ax^2+bx+c=0\) 的解為
@@ -99,9 +105,24 @@
         \[\begin{equation}
         x=\frac{-b\pm\sqrt{b^2-4ac}}{2a} \label{eq3}
         \end{equation}\]
-    </p>
-     
-    </body>
+    </p>-->
+    <p>您可在下面的方框中練習，用 html 語法寫文章，其中的數學式子依 LaTex 格式，接著按排版鍵立見成效。</p>
+    <textarea title="type paragraph with mathematics, then press ctrl+enter" id="textarea" rows="10"
+        cols="60">
+        方程式 \(ax^2+bx+c=0\) 的解為
+        \[x=\frac{-b\pm\sqrt{b^2-4ac}}{2a} \tag{1.3}\]
+    </textarea>
+    <div id="mathjax-output"></div>
+    <button id="btnTypeset" style="font-size:16pt">排版</button>
+    <script>
+        let textarea = document.getElementById("textarea")
+        let mathjaxoutput = document.getElementById("mathjax-output")
+        function doTypeSet() {
+            mathjaxoutput.innerHTML = textarea.value
+            window.MathJax.typeset([mathjaxoutput])
+        }
+        document.getElementById("btnTypeset").addEventListener('click', doTypeSet)
+    </script>
 </body>
 
 </html>

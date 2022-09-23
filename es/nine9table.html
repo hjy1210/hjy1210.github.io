@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>九九乘法表</title>
+    <style>
+        label, input, button, p {
+            font-size:1.6em;
+        }
+        article {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -50px;
+            margin-left: -150px;
+            width: 300px;
+            height: 500px;
+        }​
+    </style>
+</head>
+
+<body>
+    <p><span id='note'></span><span id='duration'></span></p>
+    <div class="main" style="display:none;margin:100px;">
+        <label id="digit1">3</label> <label>x</label> <label id="digit2">4</label> <label>=</label> 
+        <input type="text" id="result" size="2"></input>
+        <button onclick="send()" id="btnSend">確認</button>
+        <a download="download.json" href="" id="downloadlink" style="display:none;"></a>
+        <input type="checkbox" id="forceSave" ><label for="forceSave">做完本輪就離開</label>
+    </div>
+    <button onclick="init()" id="start">再試一次</button>
+    <textarea id="statistics" style="width:100%" rows="10" readonly>
+    </textarea>
+    <!--<button onclick="save()">download</button>-->
+    <script>
+        var data;
+        var indexes;
+        var curIndex;
+        var realIndex;
+        var curItem;
+        var startDate;
+        var spanTimespan;
+        var epoch = 0;
+        var forceSave = false;
+        let digit1 = document.getElementById('digit1');
+        let digit2 = document.getElementById('digit2');
+        let result = document.getElementById('result');
+        let btnSend = document.getElementById('btnSend');
+        let note = document.getElementById('note');
+        let duration = document.getElementById('duration');
+        let main = document.querySelector(".main");
+        let statistics = document.getElementById('statistics');
+        let start = document.getElementById("start");
+        result.addEventListener('keyup', entersend);
+        let checkForceSave = document.getElementById('forceSave');
+        checkForceSave.addEventListener('click', ()=>{forceSave=!forceSave});
+        function save() {
+            var enddate=new Date();
+            data["enddate"]=enddate;
+            data["duration"]=(data.enddate-data.startdate)/1000;
+            duration.innerText=`${(new Date()-startDate)/1000} seconds`;
+            let count=0;
+            let correctCount=0;
+            for (let i=0; i<data.items.length;i++){
+                let key=data.items[i].key;
+                let standard = data.items[i].standard;
+                if (data.items[i].answers.length>epoch){
+                    count++;
+                    if (data.items[i].answers[epoch]==standard){
+                        correctCount++
+                    }
+                }
+            }
+            alert(`第${epoch+1}輪，應做${count}題，答對${correctCount}題`);
+            if (count==correctCount || forceSave) {
+                let blob = new Blob([JSON.stringify(data, null, 4)], { type: "text/plain" });
+                let url = URL.createObjectURL(blob);
+                let downloadlink = document.getElementById('downloadlink');
+                downloadlink.href = url;
+                downloadlink.click();
+                URL.revokeObjectURL(url);
+                constructStatistics();
+                return;
+            }
+            epoch++;
+            indexes = generateIndexes();
+            if (indexes.length==0) return;
+            curIndex = 0;
+            setJob();
+        }
+        function init(){
+            main.style="display:block;margin:100px;";
+            start.style="display:none;";
+            data={};
+            startDate = new Date();
+            data["startdate"]= startDate;
+            data.items=initNineNine();
+            epoch = 0;
+            indexes = generateIndexes();
+            statistics.value="";
+            curIndex = 0;
+            setJob();
+        }
+        function generateIndexes(){
+            let indexes = [...Array(data.items.length).keys()]
+            if (epoch>0){
+                indexes = indexes.filter((x)=> data.items[x].answers[data.items[x].answers.length-1]!=data.items[x].standard);
+            }
+            let values = indexes.map(x=>Math.random());
+            indexes.sort((a,b)=>values[a]-values[b]);
+            return indexes;
+        }
+        function initNineNine(){
+            var items=[];
+            for (let a=2; a<10; a++){
+                for (let b=a; b<10; b++){
+                    var o = {};
+                    o.key = Math.random()<0.5 ? `${a}${b}` : `${b}${a}`;
+                    o.standard = a*b;
+                    o.answers = [];
+                    items.push(o)
+                }
+            }
+            return items;
+        }
+        init();
+
+        function setJob(){
+            if (indexes.length==0){
+                return;
+            }
+            if (curIndex>=indexes.length) {
+              save();
+              return;
+            }
+            note.innerText=`第${epoch+1}輪，第${curIndex+1}/${indexes.length}題`;
+            duration.innerText=`${(new Date()-startDate)/1000} seconds`;
+            realIndex = indexes[curIndex];
+            curItem = data.items[realIndex];
+            digit1.innerText = curItem.key.substr(0,1);
+            digit2.innerText = curItem.key.substr(1,1);
+            result.value='';
+            result.focus();
+        }
+
+        function send(){
+            var ans = parseInt(result.value);
+            var a = parseInt(digit1.innerText);
+            var b = parseInt(digit2.innerText);
+            curItem.answers.push(ans);
+            //alert(`correct ans is ${a*b}, your ans is ${ans}, you are ${ans==a*b ? "correct":"wrong"}`)
+            curIndex ++;
+            setJob();
+        }
+        function entersend(ev){
+            //console.log(ev);
+            if (ev.key=="Enter"){
+                btnSend.click();
+            }
+        }
+        function constructStatistics(){
+            let maxtrial = 0;
+            for (let i=0;i<data.items.length;i++){
+                maxtrial = Math.max(maxtrial, data.items[i].answers.length);
+            }
+            let s='';
+            for (let i=maxtrial; i> 0;i--) {
+                let appear=false;
+                for (let i1=0;i1<data.items.length;i1++){
+                    if (data.items[i1].answers.length==i && (i>1 || (i==1 && data.items[i1].answers[0]!=data.items[i1].standard))){
+                        if (!appear) {
+                            s += `作答${i}次的有\n`;
+                            appear = true;
+                        }
+                        s += `  題目:${data.items[i1].key}，作答：`;
+                        for (let j=0;j<data.items[i1].answers.length;j++){
+                            s+=`${j>0?", ":""}${data.items[i1].answers[j]}${j==data.items[i1].answers.length-1?"\n":""}`;
+                        }
+                    }
+                }
+            }
+            statistics.value = s;
+            main.style="display:none;";
+            start.style="display:inline;";
+
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body, button {
+            font-size: 1.2em;
+            font-family: 標楷體;
+        }
+        span {
+            font-size: 1.4em;
+            font-family: 標楷體; 
+        }
+        .active {
+            background-color: lightskyblue;
+        }
+        .odd {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <input type="file" id="fileElem" accept=".txt" style="display:none" />
+        <button id="fileSelect">從本文檔載入音檔資料</button>
+        <button onClick="audio.play()">播放</button> <button onClick="audio.pause()">暫停</button>
+        <span id="filename"></span>
+        <button onclick="window.location.href = 'index.html';">回首頁</button>
+    </div>
+    <div>
+        <audio id="audio"></audio>
+    </div>
+    <div id="divLunwen" style="padding:6px;">
+
+    </div>
+    <script>
+        var data;
+        const fileSelect = document.getElementById("fileSelect");
+        const fileElem = document.getElementById("fileElem");
+        const divLunwen = document.getElementById("divLunwen");
+        const audio = document.getElementById("audio");
+        const leading = "http://bwglobal.inetfile.org/LR-mp3/001-160/";
+        var endtime;
+        var spans;
+        fileSelect.addEventListener("click", (e) => {
+            if (fileElem) {
+                fileElem.click();
+            }
+        });
+
+        audio.addEventListener("timeupdate", updated)
+        fileElem.addEventListener("change", loadFile);
+
+        function loadFile(ev) {
+            ev.preventDefault();
+            if (ev.target.files.length > 0) {
+                var file = ev.target.files[0];
+                document.getElementById("filename").innerText = file.name;
+                var reader = new FileReader()
+                reader.onloadend = (event) => {
+                    data = JSON.parse(event.target.result);
+                    setup();
+                }
+                reader.readAsText(file)
+            }
+        }
+        function setup() {
+            curparagraph = null;
+            activeSpan = null;
+            divLunwen.innerHTML = "";
+            data.forEach((item, index) => {
+                if (item.newpar || curparagraph == null) {
+                    curparagraph = document.createElement("p");
+                    divLunwen.appendChild(curparagraph)
+                }
+                var span = document.createElement("span");
+                span.classList.add("guanglun");
+                span.classList.add(index % 2 == 1 ? "odd" : "even");
+                span.textContent = item.source;
+                /**var src = `https://lamrim.xyz/player2/?&tch=gl1&af1=${item.startvol}&st1=${minsec2sec(item.starttime)}`;
+                if (item.endvol && item.endvol != item.startvol) {
+                    src = src + `&af2=${item.endvol}&et2=${minsec2sec(item.endtime)}`
+                } else {
+                    src = src + `&et1=${minsec2sec(item.endtime)}`
+                }*/
+                //var src = leading + item.startvol.toUpperCase()+".mp3";
+                span.setAttribute("vol",  item.startvol.toUpperCase());
+                span.setAttribute("starttime", minsec2sec(item.starttime));
+                span.setAttribute("endtime", minsec2sec(item.endtime));
+                span.setAttribute("title",`${item.startvol.toUpperCase()} ${item.starttime}-${item.endtime}`);
+                span.addEventListener("click", (ev) => setYinDang(index));
+                curparagraph.appendChild(span)
+            })
+            spans = document.querySelectorAll("span.guanglun");
+            audio.pause();
+        }
+        function minsec2sec(minsec) {
+            var tokens = minsec.split(":")
+            if (tokens.length == 1)
+                return parseInt(minsec);
+            else if (tokens.length == 2) {
+                return parseInt(tokens[0]) * 60 + parseInt(tokens[1]);
+            }
+            else return 0;
+        }
+
+        function setYinDang(ind) {
+            spans.forEach((s)=>{
+               s.classList.remove("active");
+            })
+            spans[ind].classList.add("active");
+            audio.pause();
+            index = ind;
+            var vol = spans[index].getAttribute("vol");
+            let src = leading + vol.padStart(4,'0') + ".mp3";
+            audio.currentTime = parseInt(spans[index].getAttribute("starttime"));
+            endtime = parseInt(spans[index].getAttribute("endtime"))
+            if (src!=audio.src){
+                audio.src=src;
+                audio.load();
+                audio.play();
+            } else {
+                audio.play();
+            }
+        }
+
+        function updated(){
+            currentTime = audio.currentTime;
+
+            if (audio.currentTime > endtime || audio.ended){
+                audio.pause();
+                if (index < data.length - 1){
+                    setYinDang(index + 1);
+                } else {
+                    //audio.src="";
+                }
+            }
+        }
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button onclick="window.location.href = 'index.html';">回首頁</button>
+    <p>用此網頁的方法製造音檔連結資料檔，以19a音檔為例。</p>
+    <ol>
+        <li>到 <a href="https://lamrim.xyz/player2/">https://lamrim.xyz/player2/</a> 開啟19a音檔，進入開發者工具的console頁面</li>
+        <li>將下面的程式內容抄入，它會將19a音檔的內容取出變成音檔連結資料檔，取名P-gl-19a.txt(19a音檔對應的檔名)
+            <pre>
+                <code>
+                    function extractGuanglunTextOneVol() {
+                        function getVolName() {
+                            let div = document.querySelector("div.MuiGrid-root.MuiGrid-item");
+                            let h6 = div.querySelector("h6.MuiTypography-root");
+                            let text = h6.innerText;
+                            let start = text.indexOf("[");
+                            let end = text.indexOf("]");
+                            let vol = text.substr(start + 1, end - start - 1);
+                            return vol.toLowerCase();
+                        }
+                        function isTimemark(line) {
+                            return (line.length == 7 && line.substr(0, 1) == '[' && line.substr(6, 1) == ']')
+                        }
+                        function parseData(str, vol) {
+                            let lines = str.split('\n');
+                            let timemarks = lines.map(x => isTimemark(x));
+                            let needKeeps = lines.map((x) => true);
+                            for (let i = 0; i < lines.length; i++) {
+                                if (i > 0 && lines[i] == '' && timemarks[i - 1]) //timenark後面有個時鐘
+                                    needKeeps[i] = false;
+                            }
+                            if (lines[lines.length - 1] == '')
+                                needKeeps[lines.length - 1] = false;  // 最後一個timemark後有兩個空白行
+                            lines = lines.filter((x, i) => needKeeps[i])
+            
+                            for (let i = 0; i < lines.length; i++) {
+                                if (!isTimemark(lines[i]) && lines[i].length > 1)
+                                    break;
+                                if (lines[i] == '')                //第一個廣論原文之前的解釋文才需要用*佔位
+                                    lines[i] = '*';              //用*代表解釋文
+                            }
+                            let res = [];
+                            let start = false;
+                            let curObj;
+                            let curTimeInSeconds;
+                            for (let i = 0; i < lines.length; i++) {
+                                if (isTimemark(lines[i])) {
+                                    if (start == false) {
+                                        curObj = {};
+                                        curObj.startvol = vol;
+                                        curObj.starttime = lines[i].substr(1, 5);
+                                        curObj.source = "";
+                                        curTimeInSeconds = minsec2sec(curObj.starttime);
+                                        start = true;
+                                    } else {
+                                        let t = lines[i].substr(1, 5);
+                                        if (i == lines.length - 1 || (minsec2sec(t) - curTimeInSeconds > 180 && lines[i + 1].length > 1)) {
+                                            curObj.endtime = lines[i].substr(1, 5);
+                                            res.push(JSON.parse(JSON.stringify(curObj)));
+                                            curObj = {};
+                                            curObj.startvol = vol;
+                                            curObj.starttime = lines[i].substr(1, 5);
+                                            curObj.source = "";
+                                            curTimeInSeconds = minsec2sec(curObj.starttime);
+                                            start = true;
+                                        }
+                                    }
+                                } else {
+                                    curObj.source += lines[i];
+                                }
+                            }
+                            return res;
+                        }
+                        function minsec2sec(minsec) {
+                            var tokens = minsec.split(":")
+                            if (tokens.length == 1)
+                                return parseInt(minsec);
+                            else if (tokens.length == 2) {
+                                return parseInt(tokens[0]) * 60 + parseInt(tokens[1]);
+                            }
+                            else return 0;
+                        }
+            
+                        let vol = getVolName();
+                        console.log(vol)
+                        let div = document.querySelector("div.jss41.jss42")
+                        console.log(div.tagName);
+                        let res = "";
+                        if (!div) return res;
+                        let eles = div.children;
+                        let startIndex, endIndex;
+                        let str = "";
+                        for (let index = 0; index < eles.length; index++) {
+                            if (eles[index].tagName == "DIV" && eles[index].classList.contains("MuiBox-root")) {
+                                str += `${eles[index].innerText}\n`;
+                            }
+                            if (eles[index].tagName = "P") {
+                                eles[index].querySelectorAll("span.bold-txt").forEach((s) => str += s.innerText);
+                                str += "\n";
+                            }
+                        }
+                        //console.log(str);
+                        data = parseData(str, vol);
+                        //console.log(data)
+                        //document.getElementById('data').value = JSON.stringify(data, null, 4);
+                        let blob = new Blob([JSON.stringify(data, null, 4)], { type: "text/plain" });
+                        let link = document.createElement('a');
+                        link.download = `P-gl-${vol}.txt`;
+                        let url = URL.createObjectURL(blob);
+                        link.href = url;
+                        link.click();
+                        URL.revokeObjectURL(url);
+                    }
+                    extractGuanglunTextOneVol()
+                </code>
+            </pre>
+        </li>
+    </ol>
+    <script>
+        function extractGuanglunTextOneVol() {
+            function getVolName() {
+                let div = document.querySelector("div.MuiGrid-root.MuiGrid-item");
+                let h6 = div.querySelector("h6.MuiTypography-root");
+                let text = h6.innerText;
+                let start = text.indexOf("[");
+                let end = text.indexOf("]");
+                let vol = text.substr(start + 1, end - start - 1);
+                return vol.toLowerCase();
+            }
+            function isTimemark(line) {
+                return (line.length == 7 && line.substr(0, 1) == '[' && line.substr(6, 1) == ']')
+            }
+            function parseData(str, vol) {
+                let lines = str.split('\n');
+                let timemarks = lines.map(x => isTimemark(x));
+                let needKeeps = lines.map((x) => true);
+                for (let i = 0; i < lines.length; i++) {
+                    if (i > 0 && lines[i] == '' && timemarks[i - 1]) //timenark後面有個時鐘
+                        needKeeps[i] = false;
+                }
+                if (lines[lines.length - 1] == '')
+                    needKeeps[lines.length - 1] = false;  // 最後一個timemark後有兩個空白行
+                lines = lines.filter((x, i) => needKeeps[i])
+
+                for (let i = 0; i < lines.length; i++) {
+                    if (!isTimemark(lines[i]) && lines[i].length > 1)
+                        break;
+                    if (lines[i] == '')                //第一個廣論原文之前的解釋文才需要用*佔位
+                        lines[i] = '*';              //用*代表解釋文
+                }
+                let res = [];
+                let start = false;
+                let curObj;
+                let curTimeInSeconds;
+                for (let i = 0; i < lines.length; i++) {
+                    if (isTimemark(lines[i])) {
+                        if (start == false) {
+                            curObj = {};
+                            curObj.startvol = vol;
+                            curObj.starttime = lines[i].substr(1, 5);
+                            curObj.source = "";
+                            curTimeInSeconds = minsec2sec(curObj.starttime);
+                            start = true;
+                        } else {
+                            let t = lines[i].substr(1, 5);
+                            if (i == lines.length - 1 || (minsec2sec(t) - curTimeInSeconds > 180 && lines[i + 1].length > 1)) {
+                                curObj.endtime = lines[i].substr(1, 5);
+                                res.push(JSON.parse(JSON.stringify(curObj)));
+                                curObj = {};
+                                curObj.startvol = vol;
+                                curObj.starttime = lines[i].substr(1, 5);
+                                curObj.source = "";
+                                curTimeInSeconds = minsec2sec(curObj.starttime);
+                                start = true;
+                            }
+                        }
+                    } else {
+                        curObj.source += lines[i];
+                    }
+                }
+                return res;
+            }
+            function minsec2sec(minsec) {
+                var tokens = minsec.split(":")
+                if (tokens.length == 1)
+                    return parseInt(minsec);
+                else if (tokens.length == 2) {
+                    return parseInt(tokens[0]) * 60 + parseInt(tokens[1]);
+                }
+                else return 0;
+            }
+
+            let vol = getVolName();
+            console.log(vol)
+            let div = document.querySelector("div.jss41.jss42")
+            console.log(div.tagName);
+            let res = "";
+            if (!div) return res;
+            let eles = div.children;
+            let startIndex, endIndex;
+            let str = "";
+            for (let index = 0; index < eles.length; index++) {
+                if (eles[index].tagName == "DIV" && eles[index].classList.contains("MuiBox-root")) {
+                    str += `${eles[index].innerText}\n`;
+                }
+                if (eles[index].tagName = "P") {
+                    eles[index].querySelectorAll("span.bold-txt").forEach((s) => str += s.innerText);
+                    str += "\n";
+                }
+            }
+            //console.log(str);
+            data = parseData(str, vol);
+            //console.log(data)
+            //document.getElementById('data').value = JSON.stringify(data, null, 4);
+            let blob = new Blob([JSON.stringify(data, null, 4)], { type: "text/plain" });
+            let link = document.createElement('a');
+            link.download = `P-gl-${vol}.txt`;
+            let url = URL.createObjectURL(blob);
+            link.href = url;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+        extractGuanglunTextOneVol()
+
+    </script>
+</body>
+
+</html>

@@ -6,25 +6,46 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    span:hover {
-      background-color: yellow;
-      cursor: pointer;
+    body,
+    html {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0
     }
 
-    span.active:hover {
-      background-color: lightblue;
-      cursor: pointer;
+    .row-container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .first-row {
+      border: none;
+    }
+
+    .second-row {
+      flex-grow: 1;
+      border: none;
+      margin: 0;
+      padding: 0;
     }
 
     span.active {
-      background-color: lightblue;
-      cursor: pointer;
+      background-color: lightskyblue;
+    }
+
+    span.odd {
+      text-decoration: underline;
     }
 
     span.guanglun {
       font-family: 標楷體;
-      font-size: 1.2em;
+      font-size: 1.4em;
     }
+
     button {
       font-family: 標楷體;
       font-size: 1.2em;
@@ -32,70 +53,38 @@
 
     .container {
       position: relative;
-      width: 100%;
-      height: 100px;
+      width: 98%;
+      height: 150px;
       overflow: auto;
+      padding: 1%;
     }
   </style>
 </head>
 
 <body>
-  <input type="file" id="fileElem" accept=".txt" style="display:none">
-  <button id="fileSelect">從本文檔載入音檔資料到下面的文字方塊</button>
-  <button id="btnConvert">廣論原文</button>
-  <textarea id="data" rows="20" cols="60" style="display:block; font-size:1.2em;">
-[
- {
-    "newpar": false,
-    "source":"第二說法軌理分四,一思惟說法所有勝利,二發起承事大師及法,三以何意樂加行而說,四於何等境應說不說所有差別。",
-    "startvol":"12b",
-    "starttime":"7:12",
-    "endtime":"10:8"
- }, 
- {
-    "newpar": true,
-    "source":"若不顧慮利養恭敬名等染事，而說法者勝利極大。《勸發增上意樂》中云：「慈氏，無染法施，謂不希欲，利養恭敬，而施法施。此二十種是其勝利。",
-    "startvol":"12b",
-    "starttime":"10:08",
-    "endtime":"12:22"
- }
-]
-</textarea>
-  <div width="100%" id="source" class="container">
-  </div>
-  <div>
-    <iframe width="100%" height="450px" id="iframe"></iframe>
+  <div class="row-container">
+    <div class="first-row">
+      <input type="file" id="fileElem" accept=".txt" style="display:none">
+      <button id="fileSelect">從本文檔載入音檔資料</button>
+      <span id="filename"></span>
+      <button onclick="window.location.href = 'index.html';">回首頁</button>
+      <div id="source" class="container">
+      </div>
+    </div>
+    <iframe id="iframe" class="second-row"></iframe>
   </div>
   <script>
-    const title1 = "在下面的文字方塊中填上音檔相關資料後，按本鍵製作音檔連結";
-    const title2 = "要更新音檔資料，請按此鍵";
     const fileSelect = document.getElementById("fileSelect");
     const fileElem = document.getElementById("fileElem");
     fileSelect.addEventListener("click", (e) => {
-        if (fileElem) {
-          fileElem.click();
-        }
+      if (fileElem) {
+        fileElem.click();
+      }
     }, false);
-    fileElem.addEventListener("change",loadFile);
-    var data = [{
-      "newpar": false,
-      "source": "第二說法軌理分四,一思惟說法所有勝利,二發起承事大師及法,三以何意樂加行而說,四於何等境應說不說所有差別。",
-      "startvol": "12b",
-      "starttime": "7:12",
-      "endtime": "10:8"
-    }, {
-      "newpar": true,
-      "source": "若不顧慮利養恭敬名等染事，而說法者勝利極大。《勸發增上意樂》中云：「慈氏，無染法施，謂不希欲，利養恭敬，而施法施。此二十種是其勝利。",
-      "startvol": "12b",
-      "starttime": "10:08",
-      "endtime": "12:22"
-    }
-    ];
+    fileElem.addEventListener("change", loadFile);
+    var data;
     var curparagraph = null;
     const iframe = document.getElementById('iframe');
-    const btnConvert = document.getElementById("btnConvert");
-    btnConvert.setAttribute("title", title1);
-    const textareaData = document.getElementById("data");
     const sourceDiv = document.getElementById("source");
     var activeSpan = null;
     function setYinDang(element) {
@@ -110,13 +99,17 @@
       curparagraph = null;
       activeSpan = null;
       sourceDiv.innerHTML = "";
-      data.forEach((item) => {
+      data.forEach((item, ind) => {
         if (item.newpar || curparagraph == null) {
           curparagraph = document.createElement("p");
           sourceDiv.appendChild(curparagraph)
         }
         var span = document.createElement("span");
         span.classList.add("guanglun");
+        if (ind % 2 == 1) {
+          span.classList.add("odd");
+        }
+
         span.textContent = item.source;
         var src = `https://lamrim.xyz/player2/?&tch=gl1&af1=${item.startvol}&st1=${minsec2sec(item.starttime)}`;
         if (item.endvol && item.endvol != item.startvol) {
@@ -125,9 +118,11 @@
           src = src + `&et1=${minsec2sec(item.endtime)}`
         }
         span.setAttribute("src", src);
+        span.setAttribute("title",`${item.startvol.toUpperCase()} ${item.starttime}-${item.endtime}`);
         span.addEventListener("click", (ev) => setYinDang(ev.target));
         curparagraph.appendChild(span)
       })
+      iframe.setAttribute("src", "");
     }
     function minsec2sec(minsec) {
       var tokens = minsec.split(":")
@@ -138,44 +133,25 @@
       }
       else return 0;
     }
-    function handleBtnConvert(ev) {
-      //console.log(ev.target.textContent)
-      if (btnConvert.textContent == "廣論原文") {
-        try {
-          data = JSON.parse(textareaData.value);
-          setup(data);
-        }
-        catch (err) {
-          alert(err);
-          return;
-        }
-        sourceDiv.style.display = "block"
-        textareaData.style.display = "none"
-        btnConvert.textContent = "音檔資料";
-        fileSelect.style.display = "none";
-        btnConvert.setAttribute("title", title2);
-      } else {
-        sourceDiv.style.display = "none"
-        textareaData.style.display = "block"
-        fileSelect.style.display = "inline";
-        btnConvert.textContent = "廣論原文"
-        btnConvert.setAttribute("title", title1);
-      }
-    }
-    btnConvert.addEventListener("click", handleBtnConvert)
-    function loadFile(ev){
-      //console.log(ev.target.files[0]);
+    function loadFile(ev) {
       ev.preventDefault();
-      if (ev.target.files.length>0){
+      if (ev.target.files.length > 0) {
         var file = ev.target.files[0];
+        document.getElementById("filename").innerText = file.name;
         var reader = new FileReader()
-        reader.onloadend=(event)=>{
-          textareaData.value=event.target.result
+        reader.onloadend = (event) => {
+          try {
+            data = JSON.parse(event.target.result);
+            setup(data);
+          }
+          catch (err) {
+            alert(err);
+            return;
+          }
         }
         reader.readAsText(file)
       }
     }
-  //setup(data);
   </script>
 </body>
 

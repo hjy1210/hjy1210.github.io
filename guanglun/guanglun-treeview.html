@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            font-size: 1.2em;
+        }
+
+        /* Remove default bullets */
+        ul,
+        #myUL {
+            list-style-type: none;
+        }
+
+        /* Remove margins and padding from the parent ul */
+        #myUL {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Style the caret/arrow */
+        .caret {
+            cursor: pointer;
+            user-select: none;
+            /* Prevent text selection */
+        }
+
+            /* Create the caret/arrow with a unicode, and style it */
+            .caret::before {
+                content: "\25B6";
+                color: black;
+                display: inline-block;
+                margin-right: 6px;
+            }
+
+        /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+        .caret-down::before {
+            transform: rotate(90deg);
+        }
+
+        /* Hide the nested list */
+        .nested {
+            display: none;
+        }
+
+        /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+        .active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <!--<button onclick="window.location.href = 'index.html';">回首頁</button>-->
+    <!-- 參考 https://www.w3schools.com/howto/howto_js_treeview.asp -->
+    <ul id="myUL">
+        <li>
+            <span class="caret">科判</span>
+            <ul class="nested">
+                <li>初皈敬頌及略述本論之重要(1)</li>
+                <li>
+                    <span class="caret">次開為四門</span>
+                    <ul class="nested">
+                        <li>
+                            <span class="caret">(甲1)為顯其法根源淨故開示造者殊勝(2)</span>
+                            <ul class="nested">
+                                <li>(乙1)圓滿種中受生事理(2)</li>
+                                <li>
+                                    <span class="caret">(乙2)其身獲得功德事理</span>
+                                    <ul class="nested">
+                                        <li>(丙1)知見廣博獲教功德事理(3)</li>
+                                        <li>(丙2)如理修行獲證功德事理(4)</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret">(乙3)得已於教所作事業</span>
+                                    <ul class="nested">
+                                        <li>(丙1)於印度所作事理(6)</li>
+                                        <li>(丙2)藏中所作事理(6)</li>
+                                    </ul>
+
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <span class="caret">(甲2)令於教授起敬重故開示其法殊勝(8)</span>
+                            <ul class="nested">
+                                <li>(乙1)通達一切聖教無違殊勝(8)</li>
+                                <li>(乙2)一切聖言現為教授殊勝(11)</li>
+                                <li>(乙3)易於獲得勝者密意殊勝(14)</li>
+                                <li>(乙4)極大罪行自趣消滅殊勝(14)</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <span class="caret">(甲3)如何說聞二種殊勝相應正法(15)</span>
+                            <ul class="nested">
+                                <li>
+                                    <span class="caret">(乙1)聽聞軌理</span>
+                                    <ul class="nested">
+                                        <li>(丙1)思惟聞法所有勝利(15)</li>
+                                        <li>(丙2)於法法師發起承事(16)</li>
+                                        <li>
+                                            <span class="caret">(丙3)正聽軌理</span>
+                                            <ul class="nested">
+                                                <li>(丁1)斷器三過(17)</li>
+                                                <li>(丁2)依六種想(17)</li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret">(乙2)講說軌理</span>
+                                    <ul class="nested">
+                                        <li>(丙1)思惟說法所有勝利(20)</li>
+                                        <li>(丙2)發起承事大師及法(21)</li>
+                                        <li>(丙3)以何意樂及加行而說(21)</li>
+                                        <li>(丙4)於何等境應說不說所有差別(22)</li>
+                                    </ul>
+                                </li>
+                                <li>(乙3)於完結時共作軌理(23)</li>
+
+                            </ul>
+                        </li>
+                        <li>
+                            <span class="caret">(甲4)如何正以教授引導學徒之次第(23)</span>
+                            <ul class="nested">
+                                <li>
+                                    <span class="caret">(乙1)道之根本親近知識軌理(24)</span>
+                                    <ul class="nested">
+                                        <li>
+                                            <span class="caret">(丙1)令發定解故稍開宣說(24)</span>
+                                            <ul class="nested">
+                                                <li>(丁1)所依善知識之相(24)</li>
+                                                <li>(丁2)能依學者之相(28)</li>
+                                                <li>
+                                                    <span class="caret">(丁3)彼應如何依師之理(29)</span>
+                                                    <ul class="nested">
+                                                        <li>
+                                                            <span class="caret">(戊1)意樂親近軌理(29)</span>
+                                                            <ul class="nested">
+                                                                <li>(己1)總示親近意樂(29)</li>
+                                                                <li>(己2)特申修信以為根本(31)</li>
+                                                                <li>(己3)隨念深恩應起敬重(34)</li>
+                                                            </ul>
+                                                        </li>
+                                                        <li>(戊2)加行親近軌理(35)</li>
+                                                    </ul>
+                                                </li>
+                                                <li>(丁4)依止勝利(37)</li>
+                                                <li>(丁5)未依過患(39)</li>
+                                                <li>(丁6)攝彼等義(40)</li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <span class="caret">(丙2)總略宣說修持軌理(41)</span>
+                                            <ul class="nested">
+                                                <li>
+                                                    <span class="caret">(丁1)正明修法(41)</span>
+                                                    <ul class="nested">
+                                                        <li>
+                                                            <span class="caret">(戊1)正修時應如何(41)</span>
+                                                            <ul class="nested">
+                                                                <li>(己1)加行(41)</li>
+                                                                <li><span class="caret">(己2)正行(41)</span>
+                                                                    <ul class="nested">
+                                                                        <li>(庚1)總共修法(45)</li>
+                                                                        <li>(庚2)此處修法(45)</li>
+                                                                    </ul>
+                                                                </li>
+                                                                <li>(己3)完結(46)</li>
+                                                            </ul>
+                                                        </li>
+                                                        <li>(戊2)未修中間應如何(46)</li>
+                                                    </ul>
+                                                </li>
+                                                <li>(丁2)破除此中邪妄分別(52)</li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret">(乙2)既親近已如何修心次第(59)</span>
+                                    <ul class="nested">
+                                        <li>
+                                            <span class="caret">(丙一)於有暇身勸取心要(59)</span>
+                                            <ul class="nested">
+                                                <li><span class="caret">(丁一)正明暇滿(59)</span>
+                                                    <ul class="nested">
+                                                        <li>(戊一)閒暇(59)</li>
+                                                        <li>(戊二)圓滿(60)</li>
+                                                    </ul>
+                                                </li>
+                                                <li>(丁二)思其義大(60)</li>
+                                                <li>(丁三)思惟難得(62)</li>
+                                            </ul>
+                                        </li>
+                                        <li><span class="caret">(丙二)如何攝取心要之理(66)</span>
+                                            <ul class="nested">
+                                                <li>
+                                                    <span class="caret">(丁一)於道總建立發決定解(66)</span>
+                                                    <ul class="nested">
+                                                        <li>(戊一)三士道中總攝一切至言之理(66)</li>
+                                                        <li>
+                                                            <span class="caret">(戊二)顯示由三士門如次引導之因相(67)</span>
+                                                            <ul class="nested">
+                                                                <li>(己一)顯示何為由三士道引導之義(67)</li>
+                                                                <li>
+                                                                    <span class="caret">(己二)如是次第引導之因相(68)</span>
+                                                                    <ul class="nested">
+                                                                        <li>(庚一)正明因相(68)</li>
+                                                                        <li>(庚二)所為義(72)</li>
+                                                                    </ul>
+                                                                </li>
+                                                            </ul>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                                <li>
+                                                    <span class="caret">(丁二)正於彼道取心要之理(74)</span>
+                                                    <ul class="nested">
+                                                        <li><a href="於共下士道次修身.html">(戊一)於共下士道次修身(74)</a></li>
+                                                        <li>(戊二)於共中士道次修身(153)</li>
+                                                        <li>(戊三)於上士道次修身(204)</li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    <script>
+        var toggler = document.getElementsByClassName("caret");
+        var i;
+        for (i = 0; i < toggler.length; i++) {
+            toggler[i].addEventListener("click", function () {
+                this.parentElement.querySelector(".nested").classList.toggle("active");
+                this.classList.toggle("caret-down");
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -18,7 +18,11 @@
             margin-left: -150px;
             width: 300px;
             height: 500px;
-        }​
+        }
+        .digit {
+            width:4em;
+            height:4em;
+        }
     </style>
 </head>
 
@@ -26,35 +30,57 @@
     <p><span id='note'></span><span id='duration'></span></p>
     <div class="main" style="display:none;margin:100px;">
         <label id="digit1">3</label> <label>x</label> <label id="digit2">4</label> <label>=</label> 
-        <input type="text" id="result" size="2"></input>
-        <button onclick="send()" id="btnSend">確認</button>
+        <input type="text" id="result" size="2" readonly></input>
+        <!--<button onclick="send()" id="btnSend">確認</button>-->
         <a download="download.json" href="" id="downloadlink" style="display:none;"></a>
         <input type="checkbox" id="forceSave" ><label for="forceSave">做完本輪就離開</label>
+        <table>
+            <tr>
+                <td><button id="n7" class="digit">7</button></td>
+                <td><button id="n8" class="digit">8</button></td>
+                <td><button id="n9" class="digit">9</button></td>
+            </tr>
+            <tr>
+                <td><button id="n4" class="digit">4</button></td>
+                <td><button id="n5" class="digit">5</button></td>
+                <td><button id="n6" class="digit">6</button></td>
+            </tr>
+            <tr>
+                <td><button id="n1" class="digit">1</button></td>
+                <td><button id="n2" class="digit">2</button></td>
+                <td><button id="n3" class="digit">3</button></td>
+            </tr>
+            <tr>
+                <td><button id="n0" class="digit">0</button></td>
+                <td><button id="nd" class="digit">退位</button></td>
+                <td><button id="ne" class="digit">確認</button></td>
+            </tr>
+        </table>
     </div>
     <button onclick="init()" id="start">再試一次</button>
     <textarea id="statistics" style="width:100%" rows="10" readonly>
     </textarea>
     <!--<button onclick="save()">download</button>-->
     <script>
-        var data;
-        var indexes;
+        var data; // data.items 本輪99乘法表的題目列，data.startDate 開始時間
+        var indexes;  // 本輪作答時的題目順序
         var curIndex;
         var realIndex;
         var curItem;
         var startDate;
         var spanTimespan;
-        var epoch = 0;
+        var epoch = 0;    // 輪次
         var forceSave = false;
         let digit1 = document.getElementById('digit1');
         let digit2 = document.getElementById('digit2');
         let result = document.getElementById('result');
-        let btnSend = document.getElementById('btnSend');
+        // let btnSend = document.getElementById('btnSend');
         let note = document.getElementById('note');
         let duration = document.getElementById('duration');
         let main = document.querySelector(".main");
         let statistics = document.getElementById('statistics');
         let start = document.getElementById("start");
-        result.addEventListener('keyup', entersend);
+        // result.addEventListener('keyup', entersend);
         let checkForceSave = document.getElementById('forceSave');
         checkForceSave.addEventListener('click', ()=>{forceSave=!forceSave});
         function save() {
@@ -92,7 +118,7 @@
             setJob();
         }
         function init(){
-            main.style="display:block;margin:100px;";
+            main.style="display:block;margin:30px;";
             start.style="display:none;";
             data={};
             startDate = new Date();
@@ -142,12 +168,12 @@
             curItem = data.items[realIndex];
             digit1.innerText = curItem.key.substr(0,1);
             digit2.innerText = curItem.key.substr(1,1);
-            result.value='';
+            result.value='_';
             result.focus();
         }
 
         function send(){
-            var ans = parseInt(result.value);
+            var ans = parseInt(result.value.substr(0,result.value.length-1));
             var a = parseInt(digit1.innerText);
             var b = parseInt(digit2.innerText);
             curItem.answers.push(ans);
@@ -186,6 +212,23 @@
             main.style="display:none;";
             start.style="display:inline;";
 
+        }
+        var digitButtons = document.getElementsByClassName("digit");
+        for (let i=0;i<digitButtons.length;i++){
+            digitButtons[i].addEventListener("click", sendDigit);
+        }
+        function sendDigit(event){
+            var digit = event.target.id.substr(1,1);
+            if (digit=="d") {
+                if (result.value.length>1)
+                    result.value=result.value.substr(0, result.value.length-2)+"_";
+            }
+            else if (digit=="e") {
+                send();
+            } else {
+                result.value = result.value.substr(0, result.value.length-1) + digit + "_"; 
+            }
+            result.focus();
         }
     </script>
 </body>

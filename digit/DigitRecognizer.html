@@ -137,9 +137,9 @@
         //tf.loadLayersModel('saved_model/converted_tfjs_model/model.json').then(m=>{model=m; recognizeBtn.disabled=false;});
         tf.loadLayersModel('digit_cnn_model_epoch30/model.json').then(m => { 
             model = m;
-            tf.loadLayersModel('saved_model/classifiers/model.json').then(m=>{
+            tf.loadLayersModel('Saved_Model/classifiers/model.json').then(m=>{
                 model2 = m;
-                tf.loadLayersModel('saved_model/hdrcnn/hdrcnn.json').then(m=>{
+                tf.loadLayersModel('Saved_Model/hdrcnn/hdrcnn.json').then(m=>{
                     model3 = m;
                     recognizeBtn.disabled = false; 
                 });

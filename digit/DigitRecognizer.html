@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Import TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.19.0/dist/tf.min.js"></script>
+
+    <title>Digit Recognizer</title>
+    <style>
+        canvas {
+            background-color: black;
+            margin:3px;
+        }
+    </style>
+    <script src="./findContours.js"></script>
+</head>
+
+<body>
+    <p>先在下面的畫布上畫一個阿拉伯字，再按辨識按鈕。辨識出來的數字會顯示在畫布的右側。</p>
+    <div>
+        <canvas width="280" height="280" id="canvas"></canvas>
+        <label id="label" style="font-size:2em;"></label>
+    </div>
+    <div>
+        <button id="clearBtn">Clear</button>
+        <button id="recognizeBtn" disabled="true" onclick="recognize()">
+            辨識
+        </button>
+        <button id="tmp" onclick="tmp('canvas.png')">tmp</button>
+    </div>
+    <div>
+        bounded<canvas id="canvas2"></canvas> extent<canvas id="canvas3"></canvas>normalized<canvas id="canvas4"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("canvas");
+        const canvas2 = document.getElementById("canvas2");
+        const canvas3 = document.getElementById("canvas3");
+        const canvas4 = document.getElementById("canvas4");
+        const clearBtn = document.getElementById("clearBtn");
+        const recognizeBtn = document.getElementById("recognizeBtn");
+        const ctx = canvas.getContext("2d");
+        const ctx2 = canvas2.getContext("2d");
+        const ctx3 = canvas3.getContext("2d");
+        const ctx4 = canvas4.getContext("2d");
+
+        // Set up mouse events for drawing
+        var drawing = false;
+        var mousePos = { x: 0, y: 0 };
+        var lastPos = mousePos;
+
+        canvas.addEventListener("mousedown", function (e) {
+            drawing = true;
+            lastPos = getMousePos(canvas, e);
+        });
+        canvas.addEventListener("mouseup", function (e) {
+            drawing = false;
+        });
+        canvas.addEventListener("mousemove", function (e) {
+            mousePos = getMousePos(canvas, e);
+            renderCanvas();
+        });
+
+        // Set up touch events for mobile, etc
+        canvas.addEventListener("touchstart", function (e) {
+            e.preventDefault();
+            mousePos = getTouchPos(canvas, e);
+            var touch = e.touches[0];
+            var mouseEvent = new MouseEvent("mousedown", {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        });
+        canvas.addEventListener("touchend", function (e) {
+            e.preventDefault();
+            var mouseEvent = new MouseEvent("mouseup", {});
+            canvas.dispatchEvent(mouseEvent);
+        });
+        canvas.addEventListener("touchmove", function (e) {
+            e.preventDefault();
+            var touch = e.touches[0];
+            var mouseEvent = new MouseEvent("mousemove", {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        });
+
+        clearBtn.addEventListener("click", clearCanvas);
+        // Get the position of the mouse relative to the canvas
+        function getMousePos(canvasDom, mouseEvent) {
+            var rect = canvasDom.getBoundingClientRect();
+            return {
+                x: mouseEvent.clientX - rect.left,
+                y: mouseEvent.clientY - rect.top
+            };
+        }
+
+        // Get the position of a touch relative to the canvas
+        function getTouchPos(canvasDom, touchEvent) {
+            var rect = canvasDom.getBoundingClientRect();
+            return {
+                x: touchEvent.touches[0].clientX - rect.left,
+                y: touchEvent.touches[0].clientY - rect.top
+            };
+        }
+
+        // Draw to the canvas
+        function renderCanvas() {
+            if (drawing) {
+                ctx.beginPath();
+                ctx.moveTo(lastPos.x, lastPos.y);
+                ctx.lineTo(mousePos.x, mousePos.y);
+                ctx.lineWidth = 10;
+                ctx.lineCap = 'round'
+                ctx.strokeStyle = 'white';
+                ctx.stroke();
+                lastPos = mousePos;
+            }
+        }
+
+        // Clear the canvas
+        function clearCanvas() {
+            canvas.width = canvas.width;
+            canvas2.width = canvas2.width;
+            canvas3.width = canvas3.width;
+            canvas4.width = canvas4.width;
+            document.getElementById('label').textContent = "";
+        }
+
+        var model, model2, model3;
+        //tf.loadLayersModel('saved_model/converted_tfjs_model/model.json').then(m=>{model=m; recognizeBtn.disabled=false;});
+        tf.loadLayersModel('digit_cnn_model_epoch30/model.json').then(m => { 
+            model = m;
+            tf.loadLayersModel('saved_model/classifiers/model.json').then(m=>{
+                model2 = m;
+                tf.loadLayersModel('saved_model/hdrcnn/hdrcnn.json').then(m=>{
+                    model3 = m;
+                    recognizeBtn.disabled = false; 
+                });
+            });
+        });
+
+        function rgbTensor2GrayTensor(rgbtensor, dispose = true) {
+            const [r, g, b] = tf.split(rgbtensor, 3, 2); //split to list of 3 at axis 2
+            const rt = tf.unstack(r, 2)[0];
+            //console.log(`rt.shape=${rt.shape},rgbtensor.shape=${rgbtensor.shape}`)
+            r.dispose();
+            g.dispose();
+            b.dispose();
+            if (dispose) {
+                rgbtensor.dispose();
+            }
+            rt2 = rt.reshape([1, rt.shape[0], rt.shape[1], 1])
+            rt3 = tf.image.resizeBilinear(rt2, [28, 28])
+            rt.dispose();
+            rt2.dispose();
+            return rt3;  // rank 4, shape=[1, r,c,1]
+        }
+
+        function getGrayTensorFromCanvas(canvas) {
+            //rgb = tf.browser.fromPixels(canvas, 3);
+            //return rgbTensor2GrayTensor(rgb, dispose = true)
+            return tf.tidy(()=>{
+                var r = tf.browser.fromPixels(canvas, 1);
+                var r2 = r.reshape([1, r.shape[0], r.shape[1], 1]);
+                return tf.image.resizeBilinear(r2, [28, 28])
+            });
+        }
+
+        function recognize0() {
+            const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            //console.log(`image.width=${image.width}, canvas.width=${canvas.width}, canvas.height=${canvas.height}`)
+            const rect = computeBoundingRect(image);
+            if (rect.xmax < 0) {
+                document.getElementById('label').textContent = "-1";
+                return ;
+            }
+
+            prepare3(rect);
+
+            return tf.tidy(()=>{
+                //var gray = getGrayTensorFromCanvas(canvas3).div(tf.scalar(255.));
+                //tf.browser.toPixels(gray.reshape([gray.shape[1],gray.shape[2]]), canvas4);
+                var r = tf.browser.fromPixels(canvas3, 1);
+                var r2 = tf.image.resizeBilinear(r, [28, 28]).div(tf.scalar(255.));
+                tf.browser.toPixels(r2, canvas4);
+                
+                var gray = r2.reshape([1,28,28,1]);
+                predict(gray);
+            })
+        }
+
+        function recognize() {
+            const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            //console.log(`image.width=${image.width}, canvas.width=${canvas.width}, canvas.height=${canvas.height}`)
+            const rect = computeBoundingRect(image);
+            if (rect.xmax < 0) {
+                document.getElementById('label').textContent = "-1";
+                return ;
+            }
+
+            prepare3(rect);
+
+            canvas4.width = 28;
+            canvas4.height = 28;
+            let img=new Image();
+            img.onload=()=>{
+                ctx4.drawImage(img,0,0,28,28);
+                tf.tidy(()=>{
+                    var gray = tf.browser.fromPixels(canvas4, 1).reshape([1,28,28,1]);
+                    gray = gray.div(tf.scalar(255.));
+                    predict(gray);
+               });
+            }
+            img.src = canvas3.toDataURL("image/png");
+        }
+        function prepare3(rect){
+            var data = ctx.getImageData(rect.xmin, rect.ymin, rect.xmax - rect.xmin + 1, rect.ymax - rect.ymin + 1);
+            var longer = data.height > data.width;
+            var w = longer ? data.height : data.width;
+            canvas2.width = w;
+            canvas2.height = w;
+            var left = longer ? Math.floor((w - data.width) / 2) : 0;
+            var top = longer ? 0 : Math.floor((w  - data.height) / 2);
+            //console.log(canvas2.width, canvas2.height)
+            ctx2.createImageData(w, w);
+            ctx2.putImageData(data, left, top);
+
+            var scale = 28 / 20;
+            var W = Math.floor(w * scale);
+            canvas3.width = W;
+            canvas3.height = W;
+            ctx3.createImageData(W, W);
+            ctx3.putImageData(ctx2.getImageData(0, 0, w, w), Math.floor((W - w) / 2), Math.floor((W - w) / 2));
+        }
+        function predict(gray){
+            var pred = model.predict(gray);
+            var pred2 = model2.predict(gray);
+            var pred3 = model3.predict(gray);
+            v = pred.argMax(1).dataSync()[0];
+            v2 = pred2.argMax(1).dataSync()[0];
+            v3 = pred3.argMax(1).dataSync()[0];
+            console.log(pred.dataSync()[v],pred2.dataSync()[v2],pred3.dataSync()[v3]);
+            document.getElementById('label').textContent = `[${v},${v2},${v3}]`;
+        }
+        function computeBoundingRect(image) {
+            var xmin = image.width, xmax = -1, ymin = image.height, ymax = -1;
+            for (let i = 0; i < image.width * image.height; i += 1) {
+                const j = i * 4;
+
+                if (image.data[j + 0] > 0 || image.data[j + 1] > 0 || image.data[j + 2] > 0) {
+                    const x = i % image.width;
+                    const y = Math.floor(i / image.width);
+
+                    xmin = Math.min(x, xmin);
+                    xmax = Math.max(x, xmax);
+                    ymin = Math.min(y, ymin);
+                    ymax = Math.max(y, ymax);
+                }
+            }
+
+            return { xmin: xmin, ymin: ymin, xmax: xmax, ymax: ymax };
+        }
+        function tmp(path){
+            let img = new Image();
+            img.onload=()=>{
+                canvas.getContext('2d').drawImage(img, 0, 0);
+            };
+            img.src=path;
+        }
+
+    </script>
+</body>
+
+</html>

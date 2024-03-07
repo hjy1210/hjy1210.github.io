@@ -7,53 +7,50 @@
     <title>Document</title>
     <style>
         body {
-            font-size:1.2em;
+            font-size:1.6em;
+            margin: 5px;
         }
     </style>
 </head>
 <body>
     <h1>菩提道次第廣論南普陀版手抄稿</h1>
-    <ul>
-        <li><a href="content/70A.html">70A</a></li>
-        <li><a href="content/70B.html">70B</a></li>
-        <li><a href="content/71A.html">71A</a></li>
-        <li><a href="content/71B.html">71B</a></li>
-        <li><a href="content/72A.html">72A</a></li>
-        <li><a href="content/72B.html">72B</a></li>
-        <li><a href="content/73A.html">73A</a></li>
-        <li><a href="content/73B.html">73B</a></li>
-        <li><a href="content/74A.html">74A</a></li>
-        <li><a href="content/74B.html">74B</a></li>
-        <li><a href="content/75A.html">75A</a></li>
-        <li><a href="content/75B.html">75B</a></li>
-        <li><a href="content/76A.html">76A</a></li>
-        <li><a href="content/76B.html">76B</a></li>
-        <li><a href="content/77A.html">77A</a></li>
-        <li><a href="content/77B.html">77B</a></li>
-        <li><a href="content/78A.html">78A</a></li>
-        <li><a href="content/78B.html">78B</a></li>
-        <li><a href="content/79A.html">79A</a></li>
-        <li><a href="content/79B.html">79B</a></li>
-        <li><a href="content/80A.html">80A</a></li>
-        <li><a href="content/80B.html">80B</a></li>
-        <li><a href="content/81A.html">81A</a></li>
-        <li><a href="content/81B.html">81B</a></li>
-        <li><a href="content/82A.html">82A</a></li>
-        <li><a href="content/82B.html">82B</a></li>
-        <li><a href="content/83A.html">83A</a></li>
-        <li><a href="content/83B.html">83B</a></li>
-        <li><a href="content/84A.html">84A</a></li>
-        <li><a href="content/84B.html">84B</a></li>
-        <li><a href="content/85A.html">85A</a></li>
-        <li><a href="content/85B.html">85B</a></li>
-        <li><a href="content/86A.html">86A</a></li>
-        <li><a href="content/86B.html">86B</a></li>
-        <li><a href="content/87A.html">87A</a></li>
-        <li><a href="content/87B.html">87B</a></li>
-        <li><a href="content/88A.html">88A</a></li>
-        <li><a href="content/88B.html">88B</a></li>
-        <li><a href="content/89A.html">89A</a></li>
-        <li><a href="content/89B.html">89B</a></li>
-    </ul>
+        <p><button>70A</button><button>70B</button>
+        <button>71A</button><button>71B</button>
+        <button>72A</button><button>72B</button>
+        <button>73A</button><button>73B</button>
+        <button>74A</button><button>74B</button>
+        <button>75A</button><button>75B</button>
+        <button>76A</button><button>76B</button>
+        <button>77A</button><button>77B</button>
+        <button>78A</button><button>78B</button>
+        <button>79A</button><button>79B</button></p>
+        <p></p><button>80A</button><button>80B</button>
+        <button>81A</button><button>81B</button>
+        <button>82A</button><button>82B</button>
+        <button>83A</button><button>83B</button>
+        <button>84A</button><button>84B</button>
+        <button>85A</button><button>85B</button>
+        <button>86A</button><button>86B</button>
+        <button>87A</button><button>87B</button>
+        <button>88A</button><button>88B</button>
+        <button>89A</button><button>89B</button></p>
+        <div id="span"></div>
+        <div>
+            <iframe id="iframe" height="600px" width="100%" ></iframe>
+        </div>
+
+    <script>
+        var iframe = document.getElementById("iframe");
+        var span = document.getElementById("span");
+        function setsrc(e){
+            var dest = `content/${e.target.innerText}.html`
+            span.innerText = e.target.innerText;
+            iframe.setAttribute("src", dest);
+        }
+        var btns = document.getElementsByTagName("button");
+        for (var i=0; i< btns.length; i++){
+            btns[i].addEventListener("click", setsrc);
+        }
+    </script>
 </body>
 </html>

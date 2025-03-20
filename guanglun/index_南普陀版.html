@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            font-size:1.6em;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>菩提道次第廣論南普陀版手抄稿</h1>
+        <div id="txt">
+        </div>
+        <div id="span"></div>
+        <div>
+            <iframe id="iframe" height="600px" width="100%" ></iframe>
+        </div>
+
+    <script>
+        var iframe = document.getElementById("iframe");
+        var span = document.getElementById("span");
+        var txtdiv = document.getElementById('txt')
+        for (var i=1;i<122;i++){
+            var b = document.createElement('BUTTON')
+            b.innerText = `${i}A`
+            txtdiv.appendChild(b)
+            var b = document.createElement('BUTTON')
+            b.innerText = `${i}B`
+            txtdiv.appendChild(b)
+            if (i%10==0)
+                txtdiv.appendChild(document.createElement('BR'))
+        }
+        function setsrc(e){
+            var dest = `content/${e.target.innerText}.html`
+            span.innerText = e.target.innerText;
+            iframe.setAttribute("src", dest);
+        }
+        var btns = document.getElementsByTagName("button");
+        for (var i=0; i< btns.length; i++){
+            btns[i].addEventListener("click", setsrc);
+        }
+    </script>
+</body>
+</html>

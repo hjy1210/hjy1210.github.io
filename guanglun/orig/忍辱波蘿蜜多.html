@@ -5,18 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>忍波羅蜜多</title>
-    <style>
-        body {
-            font-family: 16px;
-        }
-        .quote {
-            font-size: 12px;
-            color: blue;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="../css/guanglun.css">
+    <script src="../javascript/utils.js"></script>
   </head>
   <body>
-    <button onclick="toggle()">toggle</button>
+    <div class="navbar">
+    <button onclick="toggleQuote()">經論開關</button>
+    <button onClick="audio.play()">繼續播放</button> 
+    <button onClick="audio.pause()">暫停</button>
+    <span>點擊分秒標記聽音檔</span>
+    <span id="msgSpan"></span>
+    </div>
+    <div style="min-height:40px">
+        <audio id="audio"></audio>
+    </div>
+
+    <span class='voltime'>[120B:00:03]</span>
     <h1>忍波羅蜜多分五</h1>
     <li>一 忍之自性</li>
     <li>二 趣入修忍之方便</li>
@@ -24,40 +28,40 @@
     <li>四 修忍時如何行</li>
     <li>五 此等攝義</li>
     <h2>忍之自性</h2>
-    <p>今初耐他怨害‧安受自身所生眾苦‧及善安住法思勝解。此等違品亦有三種‧初謂瞋恚‧次謂瞋恚及怯弱心‧三謂不解無其樂欲。圓滿忍辱波羅蜜多者‧唯由自心滅除忿等修習圓滿‧非為觀待一切有情悉離暴惡‧非能辦故‧調伏自心即能成辦所為事故。</p>
-    <p class="quote">入行論云‧「惡有情如空‧非能盡降伏‧唯摧此忿心‧如破一切敵。以皮覆此地‧豈有爾許皮‧唯以鞋底皮‧如覆一切地。如是諸外物‧我不能盡遮‧應遮我自心‧何須遮諸餘。」
+    <p>今初耐他怨害‧安受自身所生眾苦‧及善安住法思勝解。<span class='voltime'>[120B:02:39]</span>此等違品亦有三種‧初謂瞋恚‧次謂瞋恚及怯弱心‧三謂不解無其樂欲。<span class='voltime'>[120B:17:58]</span>圓滿忍辱波羅蜜多者‧唯由自心滅除忿等修習圓滿‧非為觀待一切有情悉離暴惡‧非能辦故‧調伏自心即能成辦所為事故。</p>
+    <p class="quote"><span class='voltime'>[120B:20:17]</span>入行論云‧「惡有情如空‧非能盡降伏‧唯摧此忿心‧如破一切敵。以皮覆此地‧豈有爾許皮‧唯以鞋底皮‧如覆一切地。如是諸外物‧我不能盡遮‧應遮我自心‧何須遮諸餘。」
     </p>
     <h2>趣入修忍之方便</h2>
-    <p>第二趣入修忍之方便者‧雖有多門‧且當宣說修忍勝利不忍過患。其中勝利如</p>
-    <p class="quote">菩薩地云‧「謂諸菩薩‧先於其忍見諸勝利‧謂能堪忍補特伽羅‧於當來世無多怨敵無多乖離‧有多喜樂‧臨終無悔‧於身壞後當生善趣天世界中。見勝利已自能堪忍‧勸他行忍‧讚忍功德‧見能行忍補特伽羅慰意慶喜。」
+    <p><span class='voltime'>[120B:25:17]</span>第二趣入修忍之方便者‧雖有多門‧且當宣說修忍勝利不忍過患。其中勝利如</p>
+    <p class="quote">菩薩地云‧「謂諸菩薩‧先於其忍見諸勝利‧謂能堪忍補特伽羅‧於當來世無多怨敵無多乖離‧有多喜樂‧臨終無悔‧於身壞後當生善趣天世界中。<span class='voltime'>[121A:00:03]</span>見勝利已自能堪忍‧勸他行忍‧讚忍功德‧見能行忍補特伽羅慰意慶喜。」
      <br/>
      攝波羅蜜多論云‧「若有棄捨利他意‧佛說忍為勝方便‧世間圓滿諸善事‧由忍救護忿過失。是具力者妙莊嚴‧是難行者最勝力‧能息害心野火雨‧現後眾害由忍除。諸勝丈夫堪忍鎧‧惡人粗語箭難透‧反成讚歎微妙華‧名稱花鬘極悅意。」
      <br/>
      又云‧「忍為巧處成色身‧功德端嚴相好飾。」
     </p>
-    <p>謂有情邪行不退利他‧從能摧壞眾多善根忿恚怨敵而為救護‧下劣為害亦能堪忍‧是極悅意莊嚴之具。諸難行者破煩惱逼惱最勝之力‧能滅害心大火之水‧諸暴惡人以邪行箭不能透鎧‧微妙色身具金色相‧奪諸眾生眼觀意思‧是能造此黠慧巧師‧以如此等眾多勝利而為讚歎。
+    <p><span class='voltime'>[121A:08:47]</span>謂有情邪行不退利他‧從能摧壞眾多善根忿恚怨敵而為救護‧下劣為害亦能堪忍‧是極悅意莊嚴之具。諸難行者破煩惱逼惱最勝之力‧能滅害心大火之水‧諸暴惡人以邪行箭不能透鎧‧微妙色身具金色相‧奪諸眾生眼觀意思‧是能造此黠慧巧師‧以如此等眾多勝利而為讚歎。
     </p>
-    <p class="quote">入行論云‧「若勵摧忿勃‧此現後安樂。」</p>
+    <p class="quote"><span class='voltime'>[121B:00:40]</span>入行論云‧「若勵摧忿勃‧此現後安樂。」</p>
     <p>若能恆常修習堪忍不失歡喜‧故於現法一切時中常得安樂。於當來世破諸惡趣生妙善趣‧畢竟能與決定勝樂‧故於現後悉皆安樂。此等勝利皆由忍生‧於此因果關係乃至未得堅固猛利定解之時‧當勤修學。</p>
-    <p>瞋恚過患中‧不現見之過患者‧
+    <p><span class='voltime'>[121B:14:33]</span>瞋恚過患中‧不現見之過患者‧
     </p>
     <p class="quote">入行論云‧「千劫所集施‧供養善逝等‧此一切善行‧一恚能摧壞。」
     </p>
-    <p>此是如其聖勇所說錄於入行‧曼殊室利遊戲經說‧摧壞百劫所積眾善。
+    <p><span class='voltime'>[121B:16:57]</span>此是如其聖勇所說錄於入行‧曼殊室利遊戲經說‧摧壞百劫所積眾善。
     </p>
     <p class="quote">入中論亦說‧「由起剎那忿恚意樂‧能摧百劫修習施戒波羅蜜多所集諸善。」
     </p>
-    <p>須瞋何境者‧或說菩薩或說總境‧前者與入中論所說符合‧
+    <p><span class='voltime'>[121B:19:41]</span>須瞋何境者‧或說菩薩或說總境‧前者與入中論所說符合‧
     </p>
     <p class="quote">如云‧「由瞋諸佛子‧百劫施戒善‧剎那能摧壞。」
     </p>
-    <p>生恚之身者‧
+    <p><span class='voltime'>[121B:22:09]</span>生恚之身者‧
     </p>
     <p class="quote">入中論釋說‧「菩薩生瞋且壞善根‧況非菩薩而瞋菩薩。」
     </p>
     <p>境為菩薩隨知不知‧見可瞋相隨實不實‧悉如前說能壞善根。總其能壞善根‧非是定須瞋恚菩薩‧
     </p>
-    <p class="quote">集學論云‧「聖說一切有教中亦云‧諸比丘‧見此比丘以一切支禮髮爪塔‧發淨心否。如是‧大德。諸比丘‧隨此覆地下過八萬四千踰繕那乃至金輪‧盡其中間所有沙數‧則此比丘應受千倍爾許轉輪王位。」
+    <p class="quote"><span class='voltime'>[121B:25:53]</span>集學論云‧「聖說一切有教中亦云‧諸比丘‧見此比丘以一切支禮髮爪塔‧發淨心否。如是‧大德。諸比丘‧隨此覆地下過八萬四千踰繕那乃至金輪‧盡其中間所有沙數‧則此比丘應受千倍爾許轉輪王位。」
     <br/>
     乃至「具壽鄔波離來世尊所‧恭敬合掌安住一面‧白世尊言‧世尊說此比丘善根如是廣大‧世尊‧如此善根何能微薄銷滅永盡。鄔波離‧若於同梵行所而為瘡患‧為瘡患已我則不見有如是福‧鄔波離‧此大善根由彼微薄銷滅永盡。鄔波離‧故於枯樹且不應起損害之心‧況於有識之身。」
 </p>
@@ -87,13 +91,13 @@
     <p class="quote"></p>
     <p></p>
     <p class="quote"></p>
+
     <script>
-        function toggle(){
-            var elements = document.getElementsByClassName("quote");
-            for(var i=0;i<elements.length;i++){
-                    elements[i].hidden = !elements[i].hidden
-            }
+        var voltimes = document.getElementsByClassName("voltime");
+        for (var i=0;i<voltimes.length;i++){
+            voltimes[i].addEventListener("click", setYinDang)
         }
+        audio.addEventListener("timeupdate",audioUpdatetime)
     </script>
 </body>
 </html>

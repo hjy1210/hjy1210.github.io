@@ -30,13 +30,13 @@
             /* Prevent text selection */
         }
 
-            /* Create the caret/arrow with a unicode, and style it */
-            .caret::before {
-                content: "\25B6";
-                color: black;
-                display: inline-block;
-                margin-right: 6px;
-            }
+        /* Create the caret/arrow with a unicode, and style it */
+        .caret::before {
+            content: "\25B6";
+            color: black;
+            display: inline-block;
+            margin-right: 6px;
+        }
 
         /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
         .caret-down::before {
@@ -52,6 +52,10 @@
         .active {
             display: block;
         }
+		p {
+		    margin: 0;
+            padding: 0;
+		}
     </style>
 </head>
 
@@ -64,7 +68,7 @@
             <ul class="nested">
                 <li>初皈敬頌及略述本論之重要(1)</li>
                 <li>
-                    <span class="caret">次開為四門</span>
+                    <p class="caret">次開為四門</p>
                     <ul class="nested">
                         <li>
                             <span class="caret">(甲1)為顯其法根源淨故開示造者殊勝(2)</span>
